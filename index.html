@@ -1515,6 +1515,253 @@ html, body{
   transition: width .18s ease;
 }
 
+.library-reader-card__top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.reader-overlay{
+  position:fixed;
+  inset:0;
+  z-index:120;
+}
+
+.reader-overlay[hidden]{
+  display:none;
+}
+
+.reader-overlay__backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(6,10,18,.72);
+  backdrop-filter:blur(10px);
+}
+
+.reader-overlay__panel{
+  position:relative;
+  z-index:1;
+  width:min(100vw, 1400px);
+  height:100vh;
+  height:100svh;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  padding:
+    calc(16px + env(safe-area-inset-top))
+    calc(16px + env(safe-area-inset-right))
+    calc(16px + env(safe-area-inset-bottom))
+    calc(16px + env(safe-area-inset-left));
+  background:
+    radial-gradient(900px 600px at 20% 10%, rgba(255,77,141,.12), transparent 60%),
+    radial-gradient(900px 700px at 80% 20%, rgba(124,77,255,.12), transparent 60%),
+    linear-gradient(180deg, #0b1325, #0d1830);
+}
+
+.reader-overlay__panel > * + *{
+  margin-top:14px;
+}
+
+.reader-overlay.ui-hidden .reader-overlay__panel > * + *{
+  margin-top:0;
+}
+
+.reader-overlay__header{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  padding:16px 18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+}
+
+.reader-overlay__header-main{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.reader-overlay__actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.reader-overlay__body{
+  flex:1;
+  min-height:0;
+  padding:18px;
+  border-radius:24px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  overflow:hidden;
+}
+
+.reader-viewport{
+  height:100%;
+  overflow-y:auto;
+  padding-right:6px;
+}
+
+.reader-content{
+  margin:0 auto;
+  line-height:1.8;
+  color:#f3f6ff;
+  font-size:18px;
+  max-width:760px;
+  transition:
+    background .2s ease,
+    color .2s ease,
+    max-width .2s ease,
+    font-size .2s ease,
+    transform .2s ease;
+}
+
+.reader-content.is-paged{
+  min-height:100%;
+}
+
+.reader-page-nav{
+  display:none;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.reader-overlay.is-paged .reader-page-nav{
+  display:flex;
+}
+
+.reader-end-actions{
+  max-width:760px;
+  margin:24px auto 0;
+  padding:18px;
+  border-radius:18px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.reader-end-actions__title{
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.reader-end-actions__buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+body.reader-overlay-open{
+  overflow:hidden;
+}
+
+@media (max-width:700px){
+  .reader-overlay__panel{
+    padding:
+      calc(12px + env(safe-area-inset-top))
+      calc(12px + env(safe-area-inset-right))
+      calc(12px + env(safe-area-inset-bottom))
+      calc(12px + env(safe-area-inset-left));
+  }
+
+  .reader-overlay__body{
+    padding:14px;
+    border-radius:18px;
+  }
+
+  .reader-overlay__actions,
+  .reader-end-actions__buttons,
+  .reader-bottom-nav{
+    width:100%;
+  }
+
+  .reader-overlay__actions .reader-topbar-btn,
+  .reader-end-actions__buttons .reader-nav-btn,
+  .reader-bottom-nav .reader-nav-btn{
+    flex:1 1 auto;
+  }
+}
+
+.reader-overlay__header,
+#readerOverlay .reader-toolbar,
+#readerOverlay .reader-progress-wrap,
+#readerOverlay .reader-bottom-nav{
+  transition:
+    opacity .22s ease,
+    transform .22s ease;
+}
+
+.reader-overlay.ui-hidden .reader-overlay__header,
+.reader-overlay.ui-hidden .reader-toolbar,
+.reader-overlay.ui-hidden .reader-progress-wrap,
+.reader-overlay.ui-hidden .reader-bottom-nav{
+  opacity:0;
+  pointer-events:none;
+  max-height:0;
+  overflow:hidden;
+  margin:0;
+  padding-top:0;
+  padding-bottom:0;
+  border-width:0;
+  transform:none;
+}
+
+#readerOverlay .reader-overlay__body{
+  flex:1;
+  min-height:0;
+  transition:border-radius .22s ease, padding .22s ease;
+}
+
+.reader-overlay.ui-hidden .reader-overlay__body{
+  padding:0;
+}
+
+#readerOverlay .reader-overlay__actions{
+  gap:8px;
+}
+
+#readerOverlay .reader-topbar-btn{
+  min-width:auto;
+  padding:8px 12px;
+  border-radius:12px;
+}
+
+#readerOverlay .reader-bottom-nav{
+  justify-content:flex-end;
+}
+
+#readerOverlay .reader-bottom-nav .reader-nav-btn{
+  display:none;
+}
+
+#readerOverlay .reader-content{
+  padding-bottom:24px;
+}
+
+#readerOverlay .reader-viewport{
+  overscroll-behavior:contain;
+}
+
+#readerOverlay .reader-end-actions{
+  margin-bottom:18px;
+}
+
+#readerOverlay .reader-viewport{
+  height:100%;
+  min-height:0;
+}
+
+#readerOverlay .reader-content{
+  min-height:100%;
+}
+
   </style>
 </head>
 <body>
@@ -1642,6 +1889,7 @@ html, body{
         </div>
       </div>
 
+      
 <div class="nav-cards">
   <button class="nav-card-btn" type="button" onclick="showPage('birthdayPage')">
     <strong>🎂 День рождения</strong>
@@ -1969,90 +2217,33 @@ html, body{
         <div id="volumesList" class="library-stack"></div>
       </div>
 
-<div class="library-panel reader-panel">
-  <div id="readerHeader">
-    <h3>Читалка</h3>
-    <p class="reader-subtext">Выбери главу, чтобы начать читать.</p>
+<div class="library-panel library-reader-card">
+  <div class="library-reader-card__top">
+    <div>
+      <h3 id="readerCardTitle">Читалка</h3>
+      <p id="readerCardText" class="reader-subtext">Выбери главу, чтобы открыть её в полноэкранной читалке.</p>
+    </div>
+
+    <button id="openReaderOverlayBtn" type="button">
+      Открыть читалку
+    </button>
   </div>
 
-<div class="reader-topbar">
-  <div class="reader-topbar-actions">
-    <button id="backToVolumesBtn" class="reader-topbar-btn" type="button">← К томам</button>
-    <button id="toggleChapterMenuBtn" class="reader-topbar-btn btn-ghost" type="button">Главы тома</button>
+  <div class="reader-progress-wrap">
+    <div class="reader-progress-meta">
+      <span id="readerProgressLabel">Прогресс чтения</span>
+      <span id="readerProgressPercent">0%</span>
+    </div>
+    <div class="reader-progress-bar">
+      <div id="readerProgressFill" class="reader-progress-fill"></div>
+    </div>
   </div>
-  <div id="readerChapterCounter" class="reader-chapter-counter">Глава 0 из 0</div>
-</div>
 
-  <div class="reader-toolbar">
-  <div class="reader-toolbar-group reader-settings">
-    <label class="reader-setting">
-      <span>Размер</span>
-      <select id="readerFontSize">
-        <option value="16">16</option>
-        <option value="18" selected>18</option>
-        <option value="20">20</option>
-        <option value="22">22</option>
-      </select>
-    </label>
-
-    <label class="reader-setting">
-      <span>Ширина</span>
-      <select id="readerWidth">
-        <option value="narrow">Узкая</option>
-        <option value="medium" selected>Средняя</option>
-        <option value="wide">Широкая</option>
-      </select>
-    </label>
-
-    <label class="reader-setting">
-      <span>Шрифт</span>
-      <select id="readerFontSelect">
-        <option value="serif">Книжный</option>
-        <option value="sans">Современный</option>
-      </select>
-    </label>
-
-    <label class="reader-setting">
-      <span>Интервал</span>
-      <select id="readerLineHeightSelect">
-        <option value="1.5">Стандарт</option>
-        <option value="1.7">Свободный</option>
-        <option value="1.9">Воздушный</option>
-      </select>
-    </label>
-
-    <label class="reader-setting">
-      <span>Режим</span>
-      <select id="readerDensitySelect">
-        <option value="cozy">Уютный</option>
-        <option value="compact">Компактный</option>
-      </select>
-    </label>
-
-    <button type="button" id="readerThemeBtn" class="btn-ghost">Тёплая тема</button>
+  <div class="library-empty-card">
+    Здесь будет открываться полноэкранная читалка и позже — режим редактора.
   </div>
 </div>
-
-<div id="readerChapterMenu" class="reader-chapter-menu" hidden>
-  <div id="readerChapterMenuList" class="reader-chapter-menu-list"></div>
 </div>
-
-<div class="reader-progress-wrap">
-  <div class="reader-progress-meta">
-    <span id="readerProgressLabel">Прогресс чтения</span>
-    <span id="readerProgressPercent">0%</span>
-  </div>
-  <div class="reader-progress-bar">
-    <div id="readerProgressFill" class="reader-progress-fill"></div>
-  </div>
-</div>
-
-  <div id="readerContent" class="reader-content">
-    <p>Здесь будет открываться текст выбранной главы.</p>
-  </div>
-      <div class="reader-bottom-nav">
-  <button id="prevChapterBtn" class="reader-nav-btn">← Предыдущая</button>
-  <button id="nextChapterBtn" class="reader-nav-btn">Следующая →</button>
 </div>
 </div>
     </div>
@@ -2077,8 +2268,130 @@ html, body{
 
 </div>
 
-<div id="toast" aria-live="polite"></div>
+<div id="readerOverlay" class="reader-overlay" hidden>
+  <div class="reader-overlay__backdrop"></div>
+
+  <div class="reader-overlay__panel">
+    <div class="reader-overlay__header">
+      <div class="reader-overlay__header-main">
+        <div id="readerHeader">
+          <h3>Читалка</h3>
+          <p class="reader-subtext">Выбери главу, чтобы начать читать.</p>
+        </div>
+        <div id="readerChapterCounter" class="reader-chapter-counter">Глава 0 из 0</div>
+      </div>
+
+      <div class="reader-overlay__actions">
+        <button id="backToVolumesBtn" class="reader-topbar-btn btn-ghost" type="button">← К томам</button>
+        <button id="toggleChapterMenuBtn" class="reader-topbar-btn btn-ghost" type="button">Оглавление</button>
+        <button id="toggleEditorModeBtn" class="reader-topbar-btn btn-ghost" type="button">✎</button>
+        <button id="closeReaderOverlayBtn" class="reader-topbar-btn btn-ghost" type="button">✕</button>
+        <button id="toggleReaderSettingsBtn" class="reader-topbar-btn btn-ghost" type="button">Aa</button>
+      </div>
+    </div>
+
+    <div class="reader-toolbar" hidden>
+      <div class="reader-toolbar-group reader-settings">
+        <label class="reader-setting">
+          <span>Размер</span>
+          <select id="readerFontSize">
+            <option value="16">16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="22">22</option>
+          </select>
+        </label>
+
+        <label class="reader-setting">
+          <span>Ширина</span>
+          <select id="readerWidth">
+            <option value="narrow">Узкая</option>
+            <option value="medium">Средняя</option>
+            <option value="wide">Широкая</option>
+          </select>
+        </label>
+
+        <label class="reader-setting">
+          <span>Шрифт</span>
+          <select id="readerFontSelect">
+            <option value="serif">Книжный</option>
+            <option value="sans">Современный</option>
+          </select>
+        </label>
+
+        <label class="reader-setting">
+          <span>Интервал</span>
+          <select id="readerLineHeightSelect">
+            <option value="1.5">Стандарт</option>
+            <option value="1.7">Свободный</option>
+            <option value="1.9">Воздушный</option>
+          </select>
+        </label>
+
+        <label class="reader-setting">
+          <span>Режим</span>
+          <select id="readerDensitySelect">
+            <option value="cozy">Уютный</option>
+            <option value="compact">Компактный</option>
+          </select>
+        </label>
+
+        <label class="reader-setting">
+          <span>Чтение</span>
+          <select id="readerModeSelect">
+            <option value="scroll">Скролл</option>
+            <option value="paged">Страницы</option>
+          </select>
+        </label>
+
+        <button type="button" id="readerThemeBtn" class="btn-ghost">Тёплая тема</button>
+      </div>
+    </div>
+
+    <div id="readerChapterMenu" class="reader-chapter-menu" hidden>
+      <div id="readerChapterMenuList" class="reader-chapter-menu-list"></div>
+    </div>
+
+    <div class="reader-overlay__body">
+      <div id="readerViewport" class="reader-viewport">
+        <div id="readerContent" class="reader-content">
+          <p>Здесь будет открываться текст выбранной главы.</p>
+        </div>
+
+        <div id="readerEndActions" class="reader-end-actions" hidden>
+          <div class="reader-end-actions__title">Глава закончилась ♥</div>
+          <div class="reader-end-actions__buttons">
+            <button id="endPrevChapterBtn" class="reader-nav-btn btn-ghost" type="button">← Предыдущая глава</button>
+            <button id="endNextChapterBtn" class="reader-nav-btn" type="button">Следующая глава →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reader-progress-wrap">
+      <div class="reader-progress-meta">
+        <span>Прогресс чтения</span>
+        <span id="readerOverlayProgressPercent">0%</span>
+      </div>
+      <div class="reader-progress-bar">
+        <div id="readerOverlayProgressFill" class="reader-progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="reader-bottom-nav">
+      <button id="prevChapterBtn" class="reader-nav-btn btn-ghost" type="button">← Предыдущая</button>
+
+      <div class="reader-page-nav" id="readerPageNav">
+        <button id="prevScreenPageBtn" class="reader-nav-btn btn-ghost" type="button">← Страница</button>
+        <button id="nextScreenPageBtn" class="reader-nav-btn btn-ghost" type="button">Страница →</button>
+      </div>
+
+      <button id="nextChapterBtn" class="reader-nav-btn" type="button">Следующая →</button>
+    </div>
   </div>
+</div>
+
+<div id="toast" aria-live="polite"></div>
 
   <audio id="birthdayMusic" loop>
   <source src="birthdayMusic.mp3" type="audio/mpeg">
@@ -2154,12 +2467,32 @@ const backToVolumesBtn = document.getElementById('backToVolumesBtn');
 const readerFontSelect = document.getElementById('readerFontSelect');
 const readerLineHeightSelect = document.getElementById('readerLineHeightSelect');
 const readerDensitySelect = document.getElementById('readerDensitySelect');
-const readerProgressPercent = document.getElementById('readerProgressPercent');
-const readerProgressFill = document.getElementById('readerProgressFill');
+const readerOverlayProgressPercent = document.getElementById('readerOverlayProgressPercent');
+const readerOverlayProgressFill = document.getElementById('readerOverlayProgressFill');
 const readerProgressLabel = document.getElementById('readerProgressLabel');
 const toggleChapterMenuBtn = document.getElementById('toggleChapterMenuBtn');
 const readerChapterMenu = document.getElementById('readerChapterMenu');
 const readerChapterMenuList = document.getElementById('readerChapterMenuList');
+const openReaderOverlayBtn = document.getElementById('openReaderOverlayBtn');
+const closeReaderOverlayBtn = document.getElementById('closeReaderOverlayBtn');
+const readerOverlay = document.getElementById('readerOverlay');
+const readerViewport = document.getElementById('readerViewport');
+const readerModeSelect = document.getElementById('readerModeSelect');
+const readerPageNav = document.getElementById('readerPageNav');
+const prevScreenPageBtn = document.getElementById('prevScreenPageBtn');
+const nextScreenPageBtn = document.getElementById('nextScreenPageBtn');
+const readerEndActions = document.getElementById('readerEndActions');
+const endPrevChapterBtn = document.getElementById('endPrevChapterBtn');
+const endNextChapterBtn = document.getElementById('endNextChapterBtn');
+const readerCardTitle = document.getElementById('readerCardTitle');
+const readerCardText = document.getElementById('readerCardText');
+const toggleEditorModeBtn = document.getElementById('toggleEditorModeBtn');
+const readerOverlayHeader = document.querySelector('.reader-overlay__header');
+const readerToolbar = document.querySelector('#readerOverlay .reader-toolbar');
+const readerBottomNav = document.querySelector('#readerOverlay .reader-bottom-nav');
+const readerOverlayBody = document.querySelector('#readerOverlay .reader-overlay__body');
+const readerOverlayProgress = document.querySelector('#readerOverlay .reader-progress-wrap');
+const toggleReaderSettingsBtn = document.getElementById('toggleReaderSettingsBtn');
 const libraryData = {
   cycles: [
     {
@@ -2241,6 +2574,15 @@ const READER_SETTINGS_KEY = "libraryReaderSettings";
 const READER_PROGRESS_KEY = "libraryReaderProgress";
 const READER_SCROLL_KEY = "libraryReaderScroll";
 const READER_CHAPTER_PROGRESS_KEY = "libraryReaderChapterProgress";
+const READER_VIEW_KEY = 'readerViewSettings';
+
+let readerViewState = {
+  isOpen: false,
+  mode: 'scroll',
+  editorMode: false,
+  uiVisible: false
+};
+
 let readerSettings = {
   fontSize: 18,
   width: 'medium',
@@ -2249,6 +2591,110 @@ let readerSettings = {
   lineHeight: '1.7',
   density: 'cozy'
 };
+
+function toggleReaderSettings() {
+  if (!readerToolbar) return;
+  readerToolbar.hidden = !readerToolbar.hidden;
+}
+
+toggleReaderSettingsBtn?.addEventListener('click', () => {
+  setReaderUIVisible(true);
+  toggleReaderSettings();
+});
+
+function saveReaderViewState() {
+  localStorage.setItem(READER_VIEW_KEY, JSON.stringify({
+    mode: readerViewState.mode
+  }));
+}
+
+function loadReaderViewState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(READER_VIEW_KEY));
+    if (!saved) return;
+
+    if (saved.mode === 'scroll' || saved.mode === 'paged') {
+      readerViewState.mode = saved.mode;
+    }
+  } catch (error) {
+    console.warn('Не удалось загрузить режим чтения', error);
+  }
+}
+
+function openReaderOverlay() {
+  if (!readerOverlay || !selectedChapterId) {
+    showToast('Сначала выбери главу ♥');
+    return;
+  }
+
+  readerViewState.isOpen = true;
+  readerOverlay.hidden = false;
+  document.body.classList.add('reader-overlay-open');
+
+  syncReaderModeUI();
+  updateReaderEndActions();
+  updateReaderCard();
+
+  requestAnimationFrame(() => {
+    setReaderUIVisible(false);
+  });
+}
+
+function closeReaderOverlay() {
+  if (!readerOverlay) return;
+
+  readerViewState.isOpen = false;
+  readerOverlay.hidden = true;
+  document.body.classList.remove('reader-overlay-open');
+  closeReaderChapterMenu();
+  setReaderUIVisible(false);
+}
+
+function syncReaderModeUI() {
+  if (readerModeSelect) {
+    readerModeSelect.value = readerViewState.mode;
+  }
+
+  if (readerOverlay) {
+    readerOverlay.classList.toggle('is-paged', readerViewState.mode === 'paged');
+  }
+
+  if (readerContent) {
+    readerContent.classList.toggle('is-paged', readerViewState.mode === 'paged');
+  }
+
+  updateReaderEndActions();
+}
+
+function setReaderUIVisible(visible) {
+  readerViewState.uiVisible = Boolean(visible);
+
+  if (!readerOverlay) return;
+
+  readerOverlay.classList.toggle('ui-hidden', !readerViewState.uiVisible);
+}
+
+function toggleReaderUI() {
+  setReaderUIVisible(!readerViewState.uiVisible);
+}
+
+function updateReaderCard() {
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
+  const chapter = getSelectedChapter(volume);
+
+  if (!readerCardTitle || !readerCardText) return;
+
+  if (!cycle || !volume || !chapter) {
+    readerCardTitle.textContent = 'Читалка';
+    readerCardText.textContent = 'Выбери главу, чтобы открыть её в полноэкранной читалке.';
+    return;
+  }
+
+  readerCardTitle.textContent = `${volume.title} · ${chapter.title}`;
+  readerCardText.textContent = `Откроется в полноэкранном режиме${readerViewState.mode === 'paged' ? ' · постраничное чтение' : ' · скролл-режим'}`;
+}
+
 function updateActiveTab(pageId, btn = null) {
   const buttons = document.querySelectorAll('.tab-btn');
   buttons.forEach(button => button.classList.remove('active'));
@@ -2483,8 +2929,8 @@ function renderVolumes(cycle) {
   });
 }
 
-function updateReaderProgressUI(percent = 0) {
-  const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
+function updateReaderProgressUI(percent) {
+  const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
 
   if (readerProgressPercent) {
     readerProgressPercent.textContent = `${safePercent}%`;
@@ -2494,24 +2940,32 @@ function updateReaderProgressUI(percent = 0) {
     readerProgressFill.style.width = `${safePercent}%`;
   }
 
-  if (readerProgressLabel) {
-    readerProgressLabel.textContent = safePercent >= 100 ? 'Глава прочитана' : 'Прогресс чтения';
+  if (readerOverlayProgressPercent) {
+    readerOverlayProgressPercent.textContent = `${safePercent}%`;
+  }
+
+  if (readerOverlayProgressFill) {
+    readerOverlayProgressFill.style.width = `${safePercent}%`;
   }
 }
 
-function getReaderScrollPercent() {
-  if (!readerContent) return 0;
+function getCurrentChapterProgressKey() {
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
 
-  const maxScroll = readerContent.scrollHeight - readerContent.clientHeight;
-  if (maxScroll <= 0) return 0;
+  if (!cycle || !volume || !selectedChapterId) return null;
 
-  return (readerContent.scrollTop / maxScroll) * 100;
+  return `${cycle.id}::${volume.id}::${selectedChapterId}`;
 }
 
 function saveChapterProgress() {
-  if (!selectedChapterId) return;
+  const progressKey = getCurrentChapterProgressKey();
+  if (!progressKey) return;
 
   const payload = {
+    key: progressKey,
+    cycleId: getSelectedCycle()?.id || null,
+    volumeId: selectedVolumeId,
     chapterId: selectedChapterId,
     percent: Math.round(getReaderScrollPercent())
   };
@@ -2520,7 +2974,9 @@ function saveChapterProgress() {
 }
 
 function restoreChapterProgress() {
-  if (!selectedChapterId) {
+  const progressKey = getCurrentChapterProgressKey();
+
+  if (!progressKey) {
     updateReaderProgressUI(0);
     return;
   }
@@ -2528,7 +2984,7 @@ function restoreChapterProgress() {
   try {
     const saved = JSON.parse(localStorage.getItem(READER_CHAPTER_PROGRESS_KEY));
 
-    if (!saved || saved.chapterId !== selectedChapterId) {
+    if (!saved || saved.key !== progressKey) {
       updateReaderProgressUI(0);
       return;
     }
@@ -2609,9 +3065,9 @@ function openChapterById(cycle, volumeId, chapterId) {
   selectedVolumeId = volume.id;
   selectedChapterId = chapter.id;
 
-  if (readerContent) {
-    readerContent.scrollTop = 0;
-  }
+if (readerViewport) {
+  readerViewport.scrollTop = 0;
+}
 
   renderVolumes(cycle);
   renderReader(cycle);
@@ -2657,6 +3113,8 @@ function renderReader(cycle) {
     closeReaderChapterMenu();
     applyReaderSettings();
     updateReaderNavButtons();
+    updateReaderCard();
+    updateReaderEndActions();
     return;
   }
 
@@ -2665,19 +3123,25 @@ function renderReader(cycle) {
     <p class="reader-subtext">${volume.title} · ${chapter.title}</p>
   `;
 
-readerContent.innerHTML = chapter.content;
-saveReaderProgress();
-updateContinueReadingButton();
-updateReaderChapterCounter(cycle);
-renderReaderChapterMenu(cycle);
-applyReaderSettings();
-updateReaderNavButtons();
-restoreReaderScroll();
-restoreChapterProgress();
+  readerContent.innerHTML = chapter.content;
 
-requestAnimationFrame(() => {
-  updateReaderProgressUI(getReaderScrollPercent());
-});
+  updateReaderChapterCounter(cycle);
+  renderReaderChapterMenu(cycle);
+  applyReaderSettings();
+  updateReaderNavButtons();
+  syncReaderModeUI();
+  updateReaderCard();
+
+  restoreReaderScroll();
+  restoreChapterProgress();
+
+  requestAnimationFrame(() => {
+    updateReaderProgressUI(getReaderScrollPercent());
+    saveReaderProgress();
+    updateContinueReadingButton();
+    updateReaderEndActions();
+  });
+}
 
 function renderLibrary() {
   const cycle = getSelectedCycle();
@@ -2725,6 +3189,7 @@ function goToAdjacentChapter(direction) {
 
 function applyReaderSettings() {
   if (!readerContent) return;
+
   if (readerFontSize) readerFontSize.value = String(readerSettings.fontSize);
   if (readerWidth) readerWidth.value = readerSettings.width;
   if (readerFontSelect) readerFontSelect.value = readerSettings.fontFamily;
@@ -2738,14 +3203,6 @@ function applyReaderSettings() {
 
   readerContent.classList.toggle("is-warm", readerSettings.warmTheme);
 
-  if (readerFontSize) {
-    readerFontSize.value = String(readerSettings.fontSize);
-  }
-
-  if (readerWidth) {
-    readerWidth.value = readerSettings.width;
-  }
-
   if (readerThemeBtn) {
     readerThemeBtn.textContent = readerSettings.warmTheme ? "Обычная тема" : "Тёплая тема";
   }
@@ -2756,22 +3213,8 @@ function applyReaderSettings() {
   };
 
   readerContent.style.fontFamily = fontMap[readerSettings.fontFamily] || fontMap.serif;
-  readerContent.style.lineHeight = readerSettings.lineHeight || '1.7';
-
-  if (readerSettings.density === 'compact') {
-    readerContent.style.padding = '18px';
-  } else {
-    readerContent.style.padding = '28px';
-};
-
-readerContent.style.fontFamily = fontMap[readerSettings.fontFamily] || fontMap.serif;
-readerContent.style.lineHeight = readerSettings.lineHeight || '1.7';
-
-if (readerSettings.density === 'compact') {
-  readerContent.style.padding = '18px';
-} else {
-  readerContent.style.padding = '28px';
-}
+  readerContent.style.lineHeight = readerSettings.lineHeight || "1.7";
+  readerContent.style.padding = readerSettings.density === "compact" ? "18px" : "28px";
 }
 
 function saveReaderSettings() {
@@ -2808,18 +3251,18 @@ const payload = {
 }
 
 function saveReaderScroll() {
-  if (!readerContent || !selectedChapterId) return;
+  if (!readerViewport || !selectedChapterId) return;
 
   const payload = {
     chapterId: selectedChapterId,
-    scrollTop: readerContent.scrollTop
+    scrollTop: readerViewport.scrollTop
   };
 
   localStorage.setItem(READER_SCROLL_KEY, JSON.stringify(payload));
 }
 
 function restoreReaderScroll() {
-  if (!readerContent || !selectedChapterId) return;
+  if (!readerViewport || !selectedChapterId) return;
 
   try {
     const saved = JSON.parse(localStorage.getItem(READER_SCROLL_KEY));
@@ -2827,10 +3270,62 @@ function restoreReaderScroll() {
     if (saved.chapterId !== selectedChapterId) return;
 
     requestAnimationFrame(() => {
-      readerContent.scrollTop = saved.scrollTop || 0;
+      readerViewport.scrollTop = saved.scrollTop || 0;
+      updateReaderEndActions();
     });
   } catch (error) {
     console.warn("Не удалось восстановить позицию чтения", error);
+  }
+}
+
+function getReaderScrollPercent() {
+  if (!readerViewport) return 0;
+
+  const maxScroll = readerViewport.scrollHeight - readerViewport.clientHeight;
+  if (maxScroll <= 0) return 100;
+
+  return Math.max(0, Math.min(100, (readerViewport.scrollTop / maxScroll) * 100));
+}
+
+function scrollReaderByViewport(direction) {
+  if (!readerViewport) return;
+
+  const step = Math.max(180, Math.floor(readerViewport.clientHeight * 0.9));
+  readerViewport.scrollBy({
+    top: step * direction,
+    behavior: 'smooth'
+  });
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      updateReaderProgressUI(getReaderScrollPercent());
+      saveChapterProgress();
+      saveReaderScroll();
+      updateReaderEndActions();
+    }, 220);
+  });
+}
+
+function updateReaderEndActions() {
+  if (!readerEndActions || !readerViewport || !selectedChapterId) {
+    if (readerEndActions) readerEndActions.hidden = true;
+    return;
+  }
+
+  const maxScroll = readerViewport.scrollHeight - readerViewport.clientHeight;
+
+  if (maxScroll <= 0) {
+    readerEndActions.hidden = false;
+    return;
+  }
+
+  const distanceToBottom = maxScroll - readerViewport.scrollTop;
+  const shouldShow = distanceToBottom <= 32;
+
+  if (shouldShow) {
+    readerEndActions.hidden = false;
+  } else {
+    readerEndActions.hidden = true;
   }
 }
 
@@ -2910,22 +3405,21 @@ function toggleReaderChapterMenu() {
 }
 
 function updateReaderNavButtons() {
-  const chapters = getAllChaptersFlat();
-  const currentIndex = chapters.findIndex(
-    item =>
-      item.volumeId === selectedVolumeId &&
-      item.chapterId === selectedChapterId
-  );
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
 
-  if (prevChapterBtn) {
-    prevChapterBtn.disabled = currentIndex <= 0;
-    prevChapterBtn.style.opacity = currentIndex <= 0 ? ".55" : "1";
+  if (!volume || !Array.isArray(volume.chapters)) {
+    if (endPrevChapterBtn) endPrevChapterBtn.disabled = true;
+    if (endNextChapterBtn) endNextChapterBtn.disabled = true;
+    return;
   }
 
-  if (nextChapterBtn) {
-    nextChapterBtn.disabled = currentIndex === -1 || currentIndex >= chapters.length - 1;
-    nextChapterBtn.style.opacity = currentIndex === -1 || currentIndex >= chapters.length - 1 ? ".55" : "1";
-  }
+  const currentIndex = volume.chapters.findIndex(ch => ch.id === selectedChapterId);
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex >= 0 && currentIndex < volume.chapters.length - 1;
+
+  if (endPrevChapterBtn) endPrevChapterBtn.disabled = !hasPrev;
+  if (endNextChapterBtn) endNextChapterBtn.disabled = !hasNext;
 }
 
 sparkleBtn?.addEventListener("click", () => {
@@ -2955,57 +3449,17 @@ libraryImportStubBtn?.addEventListener("click", () => {
   showToast("Импорт документа добавим следующим этапом 📚");
 });
 
-prevChapterBtn?.addEventListener('click', () => {
-  closeReaderChapterMenu();
+if (prevChapterBtn) {
+  prevChapterBtn.addEventListener("click", () => {
+    goToAdjacentChapter(-1);
+  });
+}
 
-  if (readerContent) {
-    readerContent.scrollTop = 0;
-  }
-
-  const cycle = getSelectedCycle();
-  const volume = getSelectedVolume(cycle);
-  const chapter = getSelectedChapter(volume);
-
-  if (!cycle || !volume || !chapter) return;
-
-  const allChapters = getAllChaptersWithMeta(cycle);
-
-  const currentIndex = allChapters.findIndex(
-    item =>
-      item.volume.id === volume.id &&
-      item.chapter.id === chapter.id
-  );
-
-  if (currentIndex > 0) {
-    openChapterByGlobalIndex(cycle, currentIndex - 1);
-  }
-});
-
-nextChapterBtn?.addEventListener('click', () => {
-  closeReaderChapterMenu();
-
-  if (readerContent) {
-    readerContent.scrollTop = 0;
-  }
-
-  const cycle = getSelectedCycle();
-  const volume = getSelectedVolume(cycle);
-  const chapter = getSelectedChapter(volume);
-
-  if (!cycle || !volume || !chapter) return;
-
-  const allChapters = getAllChaptersWithMeta(cycle);
-
-  const currentIndex = allChapters.findIndex(
-    item =>
-      item.volume.id === volume.id &&
-      item.chapter.id === chapter.id
-  );
-
-  if (currentIndex < allChapters.length - 1) {
-    openChapterByGlobalIndex(cycle, currentIndex + 1);
-  }
-});
+if (nextChapterBtn) {
+  nextChapterBtn.addEventListener("click", () => {
+    goToAdjacentChapter(1);
+  });
+}
 
 readerFontSize?.addEventListener("change", () => {
   readerSettings.fontSize = Number(readerFontSize.value);
@@ -3044,10 +3498,16 @@ readerDensitySelect?.addEventListener('change', (event) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-loadReaderSettings();
-loadReaderProgress();
-updateContinueReadingButton();
-renderLibrary();
+  loadReaderSettings();
+  loadReaderProgress();
+
+  loadReaderViewState();
+  syncReaderModeUI();
+  updateReaderCard();
+
+  updateContinueReadingButton();
+  renderLibrary();
+
   updateActiveTab('homePage');
   showPage('homePage');
 
@@ -3111,29 +3571,6 @@ function showMotionPrompt(save = false) {
     wrap?.classList.remove("magic-shake");
   }, 450);
 }
-function registerTap(){
-  tapCount++;
-  clearTimeout(tapTimer);
-  tapTimer = setTimeout(()=> tapCount = 0, 1200); // если пауза — сброс
-
-  if (tapCount >= 10){
-    tapCount = 0;
-    burstHearts?.(18);
-    showToast("Ты нашла секретный уровень моей любви ❤️");
-  }
-}
-
-// учитываем и мышь, и тап
-document.addEventListener("click", (e) => {
-  // чтобы не срабатывало на кнопках слишком легко — можно оставить, но я ограничу:
-  if (e.target.closest("button")) return;
-  registerTap();
-});
-document.addEventListener("touchend", (e) => {
-  if (e.target.closest("button")) return;
-  registerTap();
-}, {passive:true});
-let musicStarted = false;
 
 function startMusicWithDelay(delayMs = 2200, targetVol = 0.22) {
   const currentMusic = getCurrentMusic();
@@ -3506,12 +3943,6 @@ toggleChapterMenuBtn?.addEventListener('click', () => {
   toggleReaderChapterMenu();
 });
 
-readerContent?.addEventListener('scroll', () => {
-  saveReaderScroll();
-  saveChapterProgress();
-  updateReaderProgressUI(getReaderScrollPercent());
-});
-
 readerChapterMenuList?.addEventListener('click', (event) => {
   const button = event.target.closest('.reader-chapter-menu-item');
   if (!button) return;
@@ -3533,6 +3964,70 @@ continueReadingBtn?.addEventListener('click', () => {
       readerBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
+});
+
+openReaderOverlayBtn?.addEventListener('click', () => {
+  if (!selectedChapterId) {
+    showToast('Сначала выбери главу ♥');
+    return;
+  }
+
+  openReaderOverlay();
+});
+
+closeReaderOverlayBtn?.addEventListener('click', () => {
+  closeReaderOverlay();
+});
+
+readerOverlay?.addEventListener('click', (event) => {
+  if (event.target.classList.contains('reader-overlay__backdrop')) {
+    closeReaderOverlay();
+  }
+});
+
+readerModeSelect?.addEventListener('change', () => {
+  readerViewState.mode = readerModeSelect.value === 'paged' ? 'paged' : 'scroll';
+  saveReaderViewState();
+  syncReaderModeUI();
+  showToast(readerViewState.mode === 'paged' ? 'Включён режим страниц ♥' : 'Включён режим скролла ♥');
+});
+
+prevScreenPageBtn?.addEventListener('click', () => {
+  scrollReaderByViewport(-1);
+});
+
+nextScreenPageBtn?.addEventListener('click', () => {
+  scrollReaderByViewport(1);
+});
+
+endPrevChapterBtn?.addEventListener('click', () => {
+  goToAdjacentChapter(-1);
+});
+
+endNextChapterBtn?.addEventListener('click', () => {
+  goToAdjacentChapter(1);
+});
+
+toggleEditorModeBtn?.addEventListener('click', () => {
+  readerViewState.editorMode = !readerViewState.editorMode;
+  showToast(readerViewState.editorMode ? 'Режим редактора подготовим следующим этапом ✍️' : 'Возвращаю обычную читалку ♥');
+});
+
+readerViewport?.addEventListener('scroll', () => {
+  updateReaderProgressUI(getReaderScrollPercent());
+  saveReaderScroll();
+  saveChapterProgress();
+  updateReaderEndActions();
+});
+
+readerOverlayBody?.addEventListener('click', (event) => {
+  const clickedControl = event.target.closest(
+    'button, select, label, .reader-chapter-menu, .reader-end-actions'
+  );
+
+  if (clickedControl) return;
+
+  toggleReaderUI();
 });
 
 renderLibrary();
