@@ -1265,6 +1265,17 @@ html, body{
   color:#111;
 }
 
+.reader-settings label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.reader-settings select {
+  min-width: 140px;
+}
+
 .reader-content{
   margin-top:14px;
   line-height:1.8;
@@ -1878,11 +1889,35 @@ html, body{
           <option value="medium" selected>Средняя</option>
           <option value="wide">Широкая</option>
         </select>
-      </label>
-
+      </label> 
       <button type="button" id="readerThemeBtn" class="btn-ghost">Тёплая тема</button>
     </div>
   </div>
+
+  <label>
+  <span>Шрифт</span>
+  <select id="readerFontSelect">
+    <option value="serif">Книжный</option>
+    <option value="sans">Современный</option>
+  </select>
+</label>
+
+<label>
+  <span>Интервал</span>
+  <select id="readerLineHeightSelect">
+    <option value="1.5">Стандарт</option>
+    <option value="1.7">Свободный</option>
+    <option value="1.9">Воздушный</option>
+  </select>
+</label>
+
+<label>
+  <span>Режим</span>
+  <select id="readerDensitySelect">
+    <option value="cozy">Уютный</option>
+    <option value="compact">Компактный</option>
+  </select>
+</label>
 
   <div id="readerContent" class="reader-content">
     <p>Здесь будет открываться текст выбранной главы.</p>
@@ -1988,6 +2023,9 @@ const readerWidth = document.getElementById("readerWidth");
 const readerThemeBtn = document.getElementById("readerThemeBtn");
 const readerChapterCounter = document.getElementById('readerChapterCounter');
 const backToVolumesBtn = document.getElementById('backToVolumesBtn');
+const readerFontSelect = document.getElementById('readerFontSelect');
+const readerLineHeightSelect = document.getElementById('readerLineHeightSelect');
+const readerDensitySelect = document.getElementById('readerDensitySelect');
 const libraryData = {
   cycles: [
     {
@@ -2070,8 +2108,11 @@ const READER_PROGRESS_KEY = "libraryReaderProgress";
 const READER_SCROLL_KEY = "libraryReaderScroll";
 let readerSettings = {
   fontSize: 18,
-  width: "medium",
-  warmTheme: false
+  width: 'medium',
+  warmTheme: false,
+  fontFamily: 'serif',
+  lineHeight: '1.7',
+  density: 'cozy'
 };
 function updateActiveTab(pageId, btn = null) {
   const buttons = document.querySelectorAll('.tab-btn');
@@ -2407,6 +2448,11 @@ function goToAdjacentChapter(direction) {
 
 function applyReaderSettings() {
   if (!readerContent) return;
+  if (readerFontSizeSelect) readerFontSizeSelect.value = String(readerSettings.fontSize);
+  if (readerWidthSelect) readerWidthSelect.value = readerSettings.width;
+  if (readerFontSelect) readerFontSelect.value = readerSettings.fontFamily;
+  if (readerLineHeightSelect) readerLineHeightSelect.value = readerSettings.lineHeight;
+  if (readerDensitySelect) readerDensitySelect.value = readerSettings.density;
 
   readerContent.style.fontSize = `${readerSettings.fontSize}px`;
 
@@ -2426,6 +2472,20 @@ function applyReaderSettings() {
   if (readerThemeBtn) {
     readerThemeBtn.textContent = readerSettings.warmTheme ? "Обычная тема" : "Тёплая тема";
   }
+
+  const fontMap = {
+  serif: '"Merriweather", "Georgia", serif',
+  sans: '"Inter", "Segoe UI", sans-serif'
+};
+
+readerContent.style.fontFamily = fontMap[readerSettings.fontFamily] || fontMap.serif;
+readerContent.style.lineHeight = readerSettings.lineHeight || '1.7';
+
+if (readerSettings.density === 'compact') {
+  readerContent.style.padding = '18px';
+} else {
+  readerContent.style.padding = '28px';
+}
 }
 
 function saveReaderSettings() {
@@ -2441,6 +2501,9 @@ function loadReaderSettings() {
       ...readerSettings,
       ...saved
     };
+    readerSettings.fontFamily = readerSettings.fontFamily || 'serif';
+    readerSettings.lineHeight = readerSettings.lineHeight || '1.7';
+    readerSettings.density = readerSettings.density || 'cozy';
   } catch (error) {
     console.warn("Не удалось загрузить настройки читалки", error);
   }
@@ -2640,6 +2703,24 @@ readerThemeBtn?.addEventListener("click", () => {
   readerSettings.warmTheme = !readerSettings.warmTheme;
   applyReaderSettings();
   saveReaderSettings();
+});
+
+readerFontSelect?.addEventListener('change', (event) => {
+  readerSettings.fontFamily = event.target.value;
+  saveReaderSettings();
+  applyReaderSettings();
+});
+
+readerLineHeightSelect?.addEventListener('change', (event) => {
+  readerSettings.lineHeight = event.target.value;
+  saveReaderSettings();
+  applyReaderSettings();
+});
+
+readerDensitySelect?.addEventListener('change', (event) => {
+  readerSettings.density = event.target.value;
+  saveReaderSettings();
+  applyReaderSettings();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
