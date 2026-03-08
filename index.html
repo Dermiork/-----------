@@ -1352,6 +1352,19 @@ html, body{
   opacity: 0.8;
 }
 
+.reader-topbar-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.reader-topbar-btn:hover {
+  transform: translateY(-1px);
+}
+
 .reader-bottom-nav {
   display: flex;
   justify-content: space-between;
@@ -1818,7 +1831,8 @@ html, body{
 
   <div class="reader-topbar">
   <button id="backToVolumesBtn" class="reader-topbar-btn">← К томам</button>
-  <div id="readerChapterCounter" class="reader-chapter-counter">Глава 0 из 0</div>
+  <button id="backToVolumesBtn" class="reader-topbar-btn" type="button">← К томам</button>
+<div id="readerChapterCounter" class="reader-chapter-counter">Глава 0 из 0</div>
 </div>
 
   <div class="reader-toolbar">
@@ -2929,6 +2943,14 @@ const enabled = await enableMotionAccess();
 
 updateMusicButton();
 updateActiveTab("homePage");
+
+backToVolumesBtn?.addEventListener('click', () => {
+  const volumesBlock = document.querySelector('.library-volumes');
+  if (volumesBlock) {
+    volumesBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
+
 renderLibrary();
 
 window.addEventListener("load", () => {
