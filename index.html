@@ -1294,6 +1294,21 @@ html, body{
   max-width:100%;
 }
 
+.library-continue-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 14px 0 18px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.library-continue-btn:hover {
+  transform: translateY(-1px);
+}
+
 @media (max-width:640px){
   .reader-toolbar{
     padding:10px 12px;
@@ -1802,6 +1817,10 @@ html, body{
       А ещё — закрытый режим редактирования только для нас двоих.
     </p>
 
+    <button id="continueReadingBtn" class="library-continue-btn" type="button" hidden>
+  Продолжить чтение
+</button>
+
     <div class="library-actions">
       <button type="button" id="openLibraryBookBtn">Открыть книгу</button>
       <button type="button" class="btn-ghost" id="libraryImportStubBtn">Загрузить документ</button>
@@ -1961,6 +1980,7 @@ const cycleInfo = document.getElementById("cycleInfo");
 const volumesList = document.getElementById("volumesList");
 const readerHeader = document.getElementById("readerHeader");
 const readerContent = document.getElementById("readerContent");
+const continueReadingBtn = document.getElementById('continueReadingBtn');
 const prevChapterBtn = document.getElementById("prevChapterBtn");
 const nextChapterBtn = document.getElementById("nextChapterBtn");
 const readerFontSize = document.getElementById("readerFontSize");
@@ -2047,6 +2067,7 @@ let selectedVolumeId = libraryData.cycles[0]?.volumes[0]?.id || null;
 let selectedChapterId = libraryData.cycles[0]?.volumes[0]?.chapters[0]?.id || null;
 const READER_SETTINGS_KEY = "libraryReaderSettings";
 const READER_PROGRESS_KEY = "libraryReaderProgress";
+const READER_SCROLL_KEY = "libraryReaderScroll";
 let readerSettings = {
   fontSize: 18,
   width: "medium",
@@ -2333,9 +2354,11 @@ function renderReader(cycle) {
 
 readerContent.innerHTML = chapter.content;
 saveReaderProgress();
+updateContinueReadingButton();
 updateReaderChapterCounter(cycle);
 applyReaderSettings();
 updateReaderNavButtons();
+restoreReaderScroll();
 }
 
 function renderLibrary() {
@@ -2424,13 +2447,42 @@ function loadReaderSettings() {
 }
 
 function saveReaderProgress() {
-  const payload = {
-    selectedCycleId,
-    selectedVolumeId,
-    selectedChapterId
-  };
+const payload = {
+  selectedCycleId,
+  selectedVolumeId,
+  selectedChapterId,
+  chapterTitle: getSelectedChapter(getSelectedVolume(getSelectedCycle()))?.title || "",
+  volumeTitle: getSelectedVolume(getSelectedCycle())?.title || ""
+};
 
   localStorage.setItem(READER_PROGRESS_KEY, JSON.stringify(payload));
+}
+
+function saveReaderScroll() {
+  if (!readerContent || !selectedChapterId) return;
+
+  const payload = {
+    chapterId: selectedChapterId,
+    scrollTop: readerContent.scrollTop
+  };
+
+  localStorage.setItem(READER_SCROLL_KEY, JSON.stringify(payload));
+}
+
+function restoreReaderScroll() {
+  if (!readerContent || !selectedChapterId) return;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(READER_SCROLL_KEY));
+    if (!saved) return;
+    if (saved.chapterId !== selectedChapterId) return;
+
+    requestAnimationFrame(() => {
+      readerContent.scrollTop = saved.scrollTop || 0;
+    });
+  } catch (error) {
+    console.warn("Не удалось восстановить позицию чтения", error);
+  }
 }
 
 function loadReaderProgress() {
@@ -2452,6 +2504,27 @@ function loadReaderProgress() {
     selectedChapterId = savedChapter.id;
   } catch (error) {
     console.warn("Не удалось загрузить прогресс чтения", error);
+  }
+}
+
+function updateContinueReadingButton() {
+  if (!continueReadingBtn) return;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(READER_PROGRESS_KEY));
+
+    if (!saved || !saved.selectedCycleId || !saved.selectedVolumeId || !saved.selectedChapterId) {
+      continueReadingBtn.hidden = true;
+      return;
+    }
+
+    const volumeText = saved.volumeTitle || "Том";
+    const chapterText = saved.chapterTitle || "Глава";
+
+    continueReadingBtn.hidden = false;
+    continueReadingBtn.textContent = `Продолжить чтение — ${volumeText} • ${chapterText}`;
+  } catch (error) {
+    continueReadingBtn.hidden = true;
   }
 }
 
@@ -2501,12 +2574,54 @@ libraryImportStubBtn?.addEventListener("click", () => {
   showToast("Импорт документа добавим следующим этапом 📚");
 });
 
-prevChapterBtn?.addEventListener("click", () => {
-  goToAdjacentChapter(-1);
+prevChapterBtn?.addEventListener('click', () => {
+
+  if (readerContent) {
+    readerContent.scrollTop = 0;
+  }
+
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
+  const chapter = getSelectedChapter(volume);
+
+  if (!cycle || !volume || !chapter) return;
+
+  const allChapters = getAllChaptersWithMeta(cycle);
+
+  const currentIndex = allChapters.findIndex(
+    item =>
+      item.volume.id === volume.id &&
+      item.chapter.id === chapter.id
+  );
+
+  if (currentIndex > 0) {
+    openChapterByGlobalIndex(cycle, currentIndex - 1);
+  }
 });
 
-nextChapterBtn?.addEventListener("click", () => {
-  goToAdjacentChapter(1);
+nextChapterBtn?.addEventListener('click', () => {
+
+  if (readerContent) {
+    readerContent.scrollTop = 0;
+  }
+
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
+  const chapter = getSelectedChapter(volume);
+
+  if (!cycle || !volume || !chapter) return;
+
+  const allChapters = getAllChaptersWithMeta(cycle);
+
+  const currentIndex = allChapters.findIndex(
+    item =>
+      item.volume.id === volume.id &&
+      item.chapter.id === chapter.id
+  );
+
+  if (currentIndex < allChapters.length - 1) {
+    openChapterByGlobalIndex(cycle, currentIndex + 1);
+  }
 });
 
 readerFontSize?.addEventListener("change", () => {
@@ -2528,9 +2643,10 @@ readerThemeBtn?.addEventListener("click", () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadReaderSettings();
-  loadReaderProgress();
-  renderLibrary();
+loadReaderSettings();
+loadReaderProgress();
+updateContinueReadingButton();
+renderLibrary();
   updateActiveTab('homePage');
   showPage('homePage');
 
@@ -2983,6 +3099,20 @@ backToVolumesBtn?.addEventListener('click', () => {
   if (volumesBlock) {
     volumesBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+});
+
+readerContent?.addEventListener('scroll', saveReaderScroll);
+
+continueReadingBtn?.addEventListener('click', () => {
+  loadReaderProgress();
+  renderLibrary();
+
+  requestAnimationFrame(() => {
+    const readerBlock = document.querySelector('.reader-panel, .library-reader, .reader-section');
+    if (readerBlock) {
+      readerBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 });
 
 renderLibrary();
