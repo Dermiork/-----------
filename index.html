@@ -2046,7 +2046,7 @@ let selectedCycleId = libraryData.cycles[0]?.id || null;
 let selectedVolumeId = libraryData.cycles[0]?.volumes[0]?.id || null;
 let selectedChapterId = libraryData.cycles[0]?.volumes[0]?.chapters[0]?.id || null;
 const READER_SETTINGS_KEY = "libraryReaderSettings";
-
+const READER_PROGRESS_KEY = "libraryReaderProgress";
 let readerSettings = {
   fontSize: 18,
   width: "medium",
@@ -2331,10 +2331,11 @@ function renderReader(cycle) {
     <p class="reader-subtext">${volume.title} · ${chapter.title}</p>
   `;
 
-  readerContent.innerHTML = chapter.content;
-  updateReaderChapterCounter(cycle);
-  applyReaderSettings();
-  updateReaderNavButtons();
+readerContent.innerHTML = chapter.content;
+saveReaderProgress();
+updateReaderChapterCounter(cycle);
+applyReaderSettings();
+updateReaderNavButtons();
 }
 
 function renderLibrary() {
@@ -2422,6 +2423,38 @@ function loadReaderSettings() {
   }
 }
 
+function saveReaderProgress() {
+  const payload = {
+    selectedCycleId,
+    selectedVolumeId,
+    selectedChapterId
+  };
+
+  localStorage.setItem(READER_PROGRESS_KEY, JSON.stringify(payload));
+}
+
+function loadReaderProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(READER_PROGRESS_KEY));
+    if (!saved) return;
+
+    const savedCycle = libraryData.cycles.find(cycle => cycle.id === saved.selectedCycleId);
+    if (!savedCycle) return;
+
+    const savedVolume = savedCycle.volumes.find(volume => volume.id === saved.selectedVolumeId);
+    if (!savedVolume) return;
+
+    const savedChapter = savedVolume.chapters.find(chapter => chapter.id === saved.selectedChapterId);
+    if (!savedChapter) return;
+
+    selectedCycleId = savedCycle.id;
+    selectedVolumeId = savedVolume.id;
+    selectedChapterId = savedChapter.id;
+  } catch (error) {
+    console.warn("Не удалось загрузить прогресс чтения", error);
+  }
+}
+
 function updateReaderNavButtons() {
   const chapters = getAllChaptersFlat();
   const currentIndex = chapters.findIndex(
@@ -2459,11 +2492,9 @@ openMiniGift?.addEventListener("click", () => {
 });
 
 openLibraryBookBtn?.addEventListener("click", () => {
-  selectedCycleId = libraryData.cycles[0]?.id || null;
-  selectedVolumeId = libraryData.cycles[0]?.volumes[0]?.id || null;
-  selectedChapterId = libraryData.cycles[0]?.volumes[0]?.chapters[0]?.id || null;
+  loadReaderProgress();
   renderLibrary();
-  showToast("Открываю нашу первую историю ♥");
+  showToast("Открываю нашу историю ♥");
 });
 
 libraryImportStubBtn?.addEventListener("click", () => {
@@ -2498,6 +2529,7 @@ readerThemeBtn?.addEventListener("click", () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadReaderSettings();
+  loadReaderProgress();
   renderLibrary();
   updateActiveTab('homePage');
   showPage('homePage');
