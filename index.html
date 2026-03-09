@@ -1996,97 +1996,27 @@ body.reader-overlay-open{
   font-size: .92em;
 }
 
-.reader-editor{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  width:min(920px, 100%);
-  margin:0 auto;
-  padding:28px 20px 120px;
-}
-
-.reader-editor[hidden]{
-  display:none !important;
-}
-
-.reader-editor__intro{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  padding:14px 16px;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:18px;
-  background:rgba(255,255,255,.04);
-  color:rgba(255,255,255,.88);
-}
-
-.reader-editor__intro span{
-  font-size:14px;
-  color:rgba(255,255,255,.64);
-}
-
-.reader-editor__label{
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.02em;
-  color:rgba(255,255,255,.72);
-}
-
-.reader-editor__textarea{
-  width:100%;
-  min-height:320px;
-  resize:vertical;
-  border:none;
+#readerOverlay.is-editor .reader-content{
   outline:none;
-  border-radius:20px;
-  padding:18px 18px 20px;
-  background:rgba(14,16,24,.88);
-  color:#f6f1ea;
-  font:500 15px/1.65 "SFMono-Regular","Consolas","Menlo",monospace;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  cursor:text;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
+  border-radius:18px;
+  padding:20px;
+  background:rgba(255,255,255,.04);
 }
 
-.reader-editor__textarea::placeholder{
-  color:rgba(246,241,234,.34);
+#readerOverlay.is-editor .reader-content:focus{
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.18),
+    0 0 0 3px rgba(124,77,255,.12);
 }
 
-.reader-editor__preview-wrap{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+#readerOverlay.is-editor .reader-content p{
+  cursor:text;
 }
 
-.reader-editor__preview-title{
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.02em;
-  color:rgba(255,255,255,.72);
-}
-
-.reader-editor__preview{
-  margin:0 auto;
-  width:min(100%, 860px);
-}
-
-.reader-topbar-btn.is-active{
-  background:rgba(255,255,255,.14);
-  color:#fff;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
-}
-
-#readerOverlay.is-editor .reader-progress-wrap{
-  opacity:1;
-}
-
-@media (max-width: 640px){
-  .reader-editor{
-    padding:18px 14px 120px;
-  }
-
-  .reader-editor__textarea{
-    min-height:260px;
-    font-size:14px;
-  }
+#readerOverlay.is-editor .reader-end-actions{
+  display:none !important;
 }
 
 #readerOverlay.is-editor .reader-content{
@@ -2676,26 +2606,6 @@ body.reader-overlay-open{
   <p>Здесь будет открываться текст выбранной главы.</p>
 </div>
 
-<div id="readerEditor" class="reader-editor" hidden>
-  <div class="reader-editor__intro">
-    <strong>Режим редактора</strong>
-    <span>Пока что это v1: черновик + live preview без постоянного сохранения.</span>
-  </div>
-
-  <label class="reader-editor__label" for="readerEditorTextarea">HTML главы</label>
-  <textarea
-    id="readerEditorTextarea"
-    class="reader-editor__textarea"
-    spellcheck="false"
-    placeholder="Здесь можно редактировать HTML главы..."
-  ></textarea>
-
-  <div class="reader-editor__preview-wrap">
-    <div class="reader-editor__preview-title">Предпросмотр</div>
-    <div id="readerEditorPreview" class="reader-content reader-editor__preview"></div>
-  </div>
-</div>
-
 <div id="readerEndActions" class="reader-end-actions" hidden>
   <div class="reader-end-actions__title">Глава закончилась ♥</div>
   <div class="reader-end-actions__buttons">
@@ -2829,9 +2739,7 @@ body.reader-overlay-open{
     const readerMetaChapter = document.getElementById('readerMetaChapter');
     const readerMetaCounter = document.getElementById('readerMetaCounter');
     const readerProgressMetaLeft = document.getElementById('readerProgressMetaLeft');
-    const readerEditor = document.getElementById('readerEditor');
-    const readerEditorTextarea = document.getElementById('readerEditorTextarea');
-    const readerEditorPreview = document.getElementById('readerEditorPreview');
+
     const libraryData = {
   cycles: [
     {
@@ -3223,21 +3131,6 @@ function setCurrentEditorValue(value) {
   chapterDrafts[draftKey] = value;
 }
 
-function syncEditorPreview() {
-  if (!readerEditorTextarea || !readerEditorPreview) return;
-
-  const value = readerEditorTextarea.value.trim();
-  readerEditorPreview.innerHTML = value || '<p>Пока здесь пусто.</p>';
-
-  applyReaderSettings();
-}
-
-function fillEditorFromCurrentChapter() {
-  if (!readerEditorTextarea) return;
-
-  readerEditorTextarea.value = getCurrentEditorValue();
-  syncEditorPreview();
-}
 
 function syncEditorModeUI() {
   const isEditor = Boolean(readerViewState.editorMode);
@@ -3247,11 +3140,9 @@ function syncEditorModeUI() {
   }
 
   if (readerContent) {
-    readerContent.hidden = isEditor;
-  }
-
-  if (readerEditor) {
-    readerEditor.hidden = !isEditor;
+    readerContent.contentEditable = isEditor ? 'true' : 'false';
+    readerContent.setAttribute('spellcheck', isEditor ? 'true' : 'false');
+    readerContent.setAttribute('data-editor-mode', isEditor ? 'on' : 'off');
   }
 
   if (toggleEditorModeBtn) {
@@ -3259,20 +3150,22 @@ function syncEditorModeUI() {
     toggleEditorModeBtn.classList.toggle('is-active', isEditor);
     toggleEditorModeBtn.setAttribute(
       'aria-label',
-      isEditor ? 'Вернуться в режим чтения' : 'Открыть режим редактора'
+      isEditor ? 'Выйти из режима редактора' : 'Открыть режим редактора'
     );
-    toggleEditorModeBtn.title = isEditor ? 'Вернуться в режим чтения' : 'Открыть режим редактора';
+    toggleEditorModeBtn.title = isEditor ? 'Выйти из режима редактора' : 'Открыть режим редактора';
   }
 
   if (isEditor) {
     closeReaderChapterMenu();
     if (readerToolbar) readerToolbar.hidden = true;
-    setReaderUIVisible(true);
-    fillEditorFromCurrentChapter();
 
     requestAnimationFrame(() => {
-      readerEditorTextarea?.focus();
+      readerContent?.focus();
     });
+  } else {
+    if (readerContent) {
+      setCurrentEditorValue(readerContent.innerHTML);
+    }
   }
 
   updateReaderEndActions();
@@ -3591,9 +3484,6 @@ function renderReader(cycle) {
 
     readerContent.innerHTML = `<p>Здесь будет открываться текст выбранной главы.</p>`;
 
-    if (readerEditorTextarea) readerEditorTextarea.value = '';
-    if (readerEditorPreview) readerEditorPreview.innerHTML = '';
-
     updateReaderChapterCounter(null);
     updateReaderMeta(null);
     updateReaderProgressUI(0);
@@ -3614,11 +3504,7 @@ function renderReader(cycle) {
     <h3>${cycle.title}</h3>
   `;
 
-  readerContent.innerHTML = renderChapterContent(chapter.content);
-
-  if (readerViewState.editorMode) {
-  fillEditorFromCurrentChapter();
-}
+  readerContent.innerHTML = renderChapterContent(getCurrentEditorValue());
 
   updateReaderChapterCounter(cycle);
   updateReaderMeta(cycle);
@@ -4519,8 +4405,8 @@ toggleEditorModeBtn?.addEventListener('click', () => {
 
   showToast(
     readerViewState.editorMode
-      ? 'Режим редактора включён ✍️'
-      : 'Режим чтения включён ♥'
+      ? 'Редактирование главы включено ✍️'
+      : 'Редактирование главы выключено ♥'
   );
 });
 
@@ -4533,12 +4419,12 @@ readerViewport?.addEventListener('scroll', () => {
 
 readerViewport?.addEventListener('click', (event) => {
   const clickedControl = event.target.closest(
-    'button, select, label, textarea, input, .reader-toolbar, .reader-chapter-menu, .reader-end-actions, .reader-editor'
-  );
+  'button, select, label, input, .reader-toolbar, .reader-chapter-menu, .reader-end-actions'
+);
 
   if (clickedControl) return;
-
   if (!readerOverlay) return;
+  if (readerViewState.editorMode) return;
 
   const hiddenNow = readerOverlay.classList.contains('ui-hidden');
 
@@ -4617,9 +4503,9 @@ readerProgressMetaLeft?.addEventListener('keydown', (event) => {
   }
 });
 
-readerEditorTextarea?.addEventListener('input', () => {
-  setCurrentEditorValue(readerEditorTextarea.value);
-  syncEditorPreview();
+readerContent?.addEventListener('input', () => {
+  if (!readerViewState.editorMode) return;
+  setCurrentEditorValue(readerContent.innerHTML);
 });
 
 renderLibrary();
