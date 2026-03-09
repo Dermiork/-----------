@@ -1999,20 +1999,25 @@ body.reader-overlay-open{
 #readerOverlay.is-editor .reader-content{
   outline:none;
   cursor:text;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
-  border-radius:18px;
-  padding:20px;
-  background:rgba(255,255,255,.04);
+  background:transparent;
+  box-shadow:none;
+  border-radius:0;
 }
 
 #readerOverlay.is-editor .reader-content:focus{
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.18),
-    0 0 0 3px rgba(124,77,255,.12);
+  outline:none;
+  box-shadow:none;
 }
 
-#readerOverlay.is-editor .reader-content p{
+#readerOverlay.is-editor .reader-content,
+#readerOverlay.is-editor .reader-content p,
+#readerOverlay.is-editor .reader-content h4{
   cursor:text;
+}
+
+#readerOverlay.is-editor .reader-content[contenteditable="true"]{
+  -webkit-user-modify: read-write-plaintext-only;
+  caret-color:#fff;
 }
 
 #readerOverlay.is-editor .reader-end-actions{
