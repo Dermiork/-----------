@@ -1236,7 +1236,28 @@ html, body{
 }
 
 .reader-settings{
-  justify-content:flex-end;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  justify-content:stretch;
+}
+
+.reader-settings label{
+  display:grid;
+  grid-template-columns:minmax(74px, auto) minmax(96px, max-content);
+  align-items:center;
+  justify-content:space-between;
+  gap:10px 14px;
+  width:100%;
+}
+
+.reader-settings select{
+  min-width:0;
+  width:auto;
+  max-width:148px;
+  justify-self:end;
+  padding:8px 28px 8px 10px;
 }
 
 .reader-setting{
@@ -1256,24 +1277,15 @@ html, body{
   border:none;
   outline:none;
   border-radius:10px;
-  padding:8px 10px;
+  padding:7px 28px 7px 10px;
   background:rgba(255,255,255,.10);
   color:#fff;
+  font-size:14px;
+  line-height:1.2;
 }
 
 .reader-setting select option{
   color:#111;
-}
-
-.reader-settings label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.reader-settings select {
-  min-width: 140px;
 }
 
 .reader-content{
@@ -1338,14 +1350,17 @@ html, body{
     justify-content:space-between;
   }
 
-  .reader-settings label {
-  width: 100%;
-}
+  .reader-settings label{
+    width:100%;
+    grid-template-columns:minmax(70px, auto) minmax(92px, max-content);
+    gap:8px 12px;
+  }
 
-.reader-settings select {
-  min-width: 0;
-  width: 150px;
-}
+  .reader-settings select{
+    min-width:0;
+    width:auto;
+    max-width:132px;
+  }
 
 .reader-topbar-actions {
   width: 100%;
@@ -1756,22 +1771,34 @@ body.reader-overlay-open{
   border-radius:18px;
   transition:opacity .22s ease, transform .22s ease;
   box-sizing:border-box;
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
 }
 
 #readerOverlay .reader-overlay__header{
   top:calc(12px + env(safe-area-inset-top));
+  min-height:132px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
 #readerOverlay .reader-toolbar{
-  top:calc(98px + env(safe-area-inset-top));
+  top:calc(156px + env(safe-area-inset-top));
+  bottom:calc(74px + env(safe-area-inset-bottom));
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:12px;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 
 #readerOverlay .reader-chapter-menu{
-  top:calc(148px + env(safe-area-inset-top));
-  max-height:min(38svh, 280px);
+  top:calc(156px + env(safe-area-inset-top));
+  bottom:calc(74px + env(safe-area-inset-bottom));
   overflow-y:auto;
   overflow-x:hidden;
-  padding:8px;
+  padding:10px;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
@@ -1832,12 +1859,6 @@ body.reader-overlay-open{
   color:#fff;
   opacity:.92;
   font-size:13px;
-}
-
-#readerOverlay .reader-toolbar{
-  top:calc(98px + env(safe-area-inset-top));
-  padding:14px;
-  box-shadow:0 12px 30px rgba(0,0,0,.22);
 }
 
 #readerOverlay .reader-settings{
