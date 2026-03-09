@@ -3124,8 +3124,6 @@ function openReaderChapter(volumeId, chapterId) {
   closeReaderChapterMenu();
 
   renderLibrary();
-  renderReader(cycle);
-  updateReaderNavButtons();
   updateContinueReadingButton();
 
   if (readerViewport) {
@@ -3139,6 +3137,45 @@ function openReaderChapter(volumeId, chapterId) {
     saveChapterProgress();
     updateReaderEndActions();
   });
+}
+
+function syncReaderEndButtons(cycle) {
+  const volume = getSelectedVolume(cycle);
+  const chapter = getSelectedChapter(volume);
+  const chapters = getAllChaptersFlat();
+
+  if (!volume || !chapter || !chapters.length) {
+    if (endPrevChapterBtn) {
+      endPrevChapterBtn.hidden = true;
+      endPrevChapterBtn.disabled = true;
+    }
+
+    if (endNextChapterBtn) {
+      endNextChapterBtn.hidden = true;
+      endNextChapterBtn.disabled = true;
+    }
+
+    return;
+  }
+
+  const currentIndex = chapters.findIndex(
+    item =>
+      item.volumeId === volume.id &&
+      item.chapterId === chapter.id
+  );
+
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex !== -1 && currentIndex < chapters.length - 1;
+
+  if (endPrevChapterBtn) {
+    endPrevChapterBtn.hidden = !hasPrev;
+    endPrevChapterBtn.disabled = !hasPrev;
+  }
+
+  if (endNextChapterBtn) {
+    endNextChapterBtn.hidden = !hasNext;
+    endNextChapterBtn.disabled = !hasNext;
+  }
 }
 
 function openChapterById(chapterId) {
@@ -3214,7 +3251,7 @@ function renderReader(cycle) {
     closeReaderChapterMenu();
     applyReaderSettings();
     updateReaderCard();
-    updateReaderNavButtons();
+    syncReaderEndButtons(null);
 
     if (readerEndActions) {
       readerEndActions.hidden = true;
@@ -3235,7 +3272,7 @@ function renderReader(cycle) {
   renderReaderChapterMenu(cycle);
   applyReaderSettings();
   updateReaderCard();
-  updateReaderNavButtons();
+  syncReaderEndButtons(cycle);
 
   restoreReaderScroll();
   restoreChapterProgress();
