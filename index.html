@@ -3109,18 +3109,20 @@ function openChapterByGlobalIndex(cycle, targetIndex) {
   renderReader(cycle);
 }
 
-function openChapterById(chapterId) {
+function openReaderChapter(volumeId, chapterId) {
   const cycle = getSelectedCycle();
-  const volume = getSelectedVolume(cycle);
+  if (!cycle || !Array.isArray(cycle.volumes)) return;
 
-  if (!cycle || !volume) return;
+  const volume = cycle.volumes.find(v => v.id === volumeId);
+  if (!volume || !Array.isArray(volume.chapters)) return;
 
-  const chapterExists = Array.isArray(volume.chapters)
-    && volume.chapters.some(ch => ch.id === chapterId);
+  const chapter = volume.chapters.find(ch => ch.id === chapterId);
+  if (!chapter) return;
 
-  if (!chapterExists) return;
-
+  selectedVolumeId = volumeId;
   selectedChapterId = chapterId;
+
+  closeReaderChapterMenu();
 
   renderLibrary();
   renderReader(cycle);
@@ -3138,6 +3140,15 @@ function openChapterById(chapterId) {
     saveChapterProgress();
     updateReaderEndActions();
   });
+}
+
+function openChapterById(chapterId) {
+  const chapters = getAllChaptersFlat();
+  const target = chapters.find(item => item.chapterId === chapterId);
+
+  if (!target) return;
+
+  openReaderChapter(target.volumeId, target.chapterId);
 }
 
 function updateReaderChapterCounter(cycle) {
@@ -3252,15 +3263,18 @@ function getAllChaptersFlat() {
 
   const result = [];
 
-  cycle.volumes.forEach(volume => {
+  cycle.volumes.forEach((volume, volumeIndex) => {
     if (!Array.isArray(volume.chapters)) return;
 
-    volume.chapters.forEach(chapter => {
+    volume.chapters.forEach((chapter, chapterIndex) => {
       result.push({
+        cycleId: cycle.id,
         volumeId: volume.id,
-        chapterId: chapter.id,
         volumeTitle: volume.title,
-        chapterTitle: chapter.title
+        volumeIndex,
+        chapterId: chapter.id,
+        chapterTitle: chapter.title,
+        chapterIndex
       });
     });
   });
@@ -3292,32 +3306,11 @@ function goToAdjacentChapter(direction) {
 
   if (currentIndex === -1) return;
 
-  const nextIndex = currentIndex + direction;
-  if (nextIndex < 0 || nextIndex >= chapters.length) return;
+  const targetIndex = currentIndex + direction;
+  if (targetIndex < 0 || targetIndex >= chapters.length) return;
 
-  const target = chapters[nextIndex];
-
-  selectedVolumeId = target.volumeId;
-  selectedChapterId = target.chapterId;
-
-  const cycle = getSelectedCycle();
-
-  renderLibrary();
-  renderReader(cycle);
-  updateReaderNavButtons();
-  updateContinueReadingButton();
-
-  if (readerViewport) {
-    readerViewport.scrollTop = 0;
-  }
-
-  requestAnimationFrame(() => {
-    updateReaderProgressUI(getReaderScrollPercent());
-    saveReaderProgress();
-    saveReaderScroll();
-    saveChapterProgress();
-    updateReaderEndActions();
-  });
+  const target = chapters[targetIndex];
+  openReaderChapter(target.volumeId, target.chapterId);
 }
 
 function applyReaderSettings() {
