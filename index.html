@@ -1934,6 +1934,14 @@ body.reader-overlay-open{
   }
 }
 
+#readerProgressMetaLeft{
+  cursor: pointer;
+}
+
+#readerProgressMetaLeft:active{
+  opacity: .72;
+}
+
   </style>
 </head>
 <body>
@@ -2444,9 +2452,7 @@ body.reader-overlay-open{
 
       <div class="reader-overlay__actions">
         <button id="backToVolumesBtn" class="reader-topbar-btn btn-ghost" type="button">← К томам</button>
-        <button id="toggleChapterMenuBtn" class="reader-topbar-btn btn-ghost" type="button">Оглавление</button>
         <button id="toggleEditorModeBtn" class="reader-topbar-btn btn-ghost" type="button">✎</button>
-        <button id="closeReaderOverlayBtn" class="reader-topbar-btn btn-ghost" type="button">✕</button>
         <button id="toggleReaderSettingsPanelBtn" class="reader-topbar-btn btn-ghost" type="button">Aa</button>
       </div>
     </div>
@@ -2530,7 +2536,7 @@ body.reader-overlay-open{
 
  <div class="reader-progress-wrap">
   <div class="reader-progress-meta">
-    <div class="reader-progress-meta-left">
+    <div id="readerProgressMetaLeft" class="reader-progress-meta-left">
       <span id="readerMetaVolume">Том</span>
       <span id="readerMetaChapter">Глава</span>
       <span id="readerMetaCounter">Глава 0 из 0</span>
@@ -2645,6 +2651,7 @@ body.reader-overlay-open{
     const readerMetaVolume = document.getElementById('readerMetaVolume');
     const readerMetaChapter = document.getElementById('readerMetaChapter');
     const readerMetaCounter = document.getElementById('readerMetaCounter');
+    const readerProgressMetaLeft = document.getElementById('readerProgressMetaLeft');
     const libraryData = {
   cycles: [
     {
@@ -4265,11 +4272,6 @@ function toggleReaderChaptersPanel() {
   }
 }
 
-toggleChapterMenuBtn?.addEventListener('click', (event) => {
-  event.stopPropagation();
-  toggleReaderChapterMenu();
-});
-
 backToVolumesBtn?.addEventListener('click', (event) => {
   event.stopPropagation();
   closeReaderOverlay();
@@ -4282,17 +4284,15 @@ backToVolumesBtn?.addEventListener('click', (event) => {
   });
 });
 
-closeReaderOverlayBtn?.addEventListener('click', (event) => {
-  event.stopPropagation();
-  closeReaderOverlay();
-});
-
 toggleReaderSettingsPanelBtn?.addEventListener('click', (event) => {
   event.stopPropagation();
   toggleReaderSettingsPanel();
 });
 
-
+readerProgressMetaLeft?.addEventListener('click', (event) => {
+  event.stopPropagation();
+  toggleReaderChapterMenu();
+});
 
 renderLibrary();
 
