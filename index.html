@@ -271,7 +271,7 @@
   letter-spacing: .2px;
   opacity: 0;
   pointer-events: none;
-  z-index: 60;
+  z-index: 1000;
   max-width: min(92vw, 520px);
   text-align: center;
 }
@@ -2965,12 +2965,16 @@ const SWEET_TEXTS = [
   "Просто береги себя, ладно? Ты слишком ценная, чтобы поступать иначе."
 ];
 
-function showToast(text){
+function showToast(text) {
   const toast = document.getElementById("toast");
   if (!toast) return;
+
   toast.textContent = text;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2400);
 }
 
 function getSelectedCycle() {
@@ -3738,17 +3742,7 @@ const isStandalone =
 if (isStandalone) {
   document.body.classList.add("standalone");
 }
-    // ===== Secret: 5 s anywhere =====
-const toast = document.getElementById("toast");
-let tapCount = 0;
-let tapTimer = null;
 
-function showToast(text){
-  if(!toast) return;
-  toast.textContent = text;
-  toast.classList.add("show");
-  setTimeout(()=>toast.classList.remove("show"), 2400);
-}
 function hideMotionPrompt(save = true) {
   motionPrompt?.classList.remove("show");
   motionPrompt?.setAttribute("aria-hidden", "true");
@@ -4205,8 +4199,6 @@ endNextChapterBtn?.addEventListener('click', () => {
 });
 
 toggleEditorModeBtn?.addEventListener('click', () => {
-  console.log('editor button click');
-
   if (typeof showToast === "function") {
     showToast("Режим редактора скоро появится ✍️");
   }
