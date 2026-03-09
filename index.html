@@ -1359,8 +1359,6 @@ html, body{
   padding: 11px 12px;
 }
 
-  #prevChapterBtn,
-  #nextChapterBtn,
   #readerThemeBtn{
     flex:1 1 auto;
   }
@@ -2592,69 +2590,62 @@ body.reader-overlay-open{
     const signatureEl = document.getElementById("signature");
     const openGift = document.getElementById("openGift");
     const copyLink = document.getElementById("copyLink");
-   const toggleMusic = document.getElementById("toggleMusic");
-const beautyBtn = document.getElementById("beautyBtn");
-const birthdayMusic = document.getElementById("birthdayMusic");
-const marchMusic = document.getElementById("marchMusic");
-const launchScreen = document.getElementById("launchScreen");
-const moodText = document.getElementById("moodText");
-const sparkleBtn = document.getElementById("sparkleBtn");
-const openMiniGift = document.getElementById("openMiniGift");
-const miniGiftBox = document.getElementById("miniGiftBox");
-const enableMotionBtn = document.getElementById("enableMotionBtn");
-const motionPrompt = document.getElementById("motionPrompt");
-const closeMotionPrompt = document.getElementById("closeMotionPrompt");
-const laterMotionBtn = document.getElementById("laterMotionBtn");
-const openLibraryBookBtn = document.getElementById("openLibraryBookBtn");
-const libraryImportStubBtn = document.getElementById("libraryImportStubBtn");
-const cyclesList = document.getElementById("cyclesList");
-const cycleInfo = document.getElementById("cycleInfo");
-const volumesList = document.getElementById("volumesList");
-const readerHeader = document.getElementById("readerHeader");
-const readerContent = document.getElementById("readerContent");
-const continueReadingBtn = document.getElementById('continueReadingBtn');
-const prevChapterBtn = document.getElementById("prevChapterBtn");
-const nextChapterBtn = document.getElementById("nextChapterBtn");
-const readerFontSize = document.getElementById("readerFontSize");
-const readerWidth = document.getElementById("readerWidth");
-const readerThemeBtn = document.getElementById("readerThemeBtn");
-const readerChapterCounter = document.getElementById('readerChapterCounter');
-const backToVolumesBtn = document.getElementById('backToVolumesBtn');
-const readerFontSelect = document.getElementById('readerFontSelect');
-const readerLineHeightSelect = document.getElementById('readerLineHeightSelect');
-const readerDensitySelect = document.getElementById('readerDensitySelect');
-const readerProgressPercent = null;
-const readerProgressFill = null;
-const readerOverlayProgressPercent = document.getElementById('readerOverlayProgressPercent');
-const readerOverlayProgressFill = document.getElementById('readerOverlayProgressFill');
-const readerProgressLabel = document.getElementById('readerProgressLabel');
-const toggleChapterMenuBtn = document.getElementById('toggleChapterMenuBtn');
-const readerChapterMenu = document.getElementById('readerChapterMenu');
-const readerChapterMenuList = document.getElementById('readerChapterMenuList');
-const openReaderOverlayBtn = document.getElementById('openReaderOverlayBtn');
-const closeReaderOverlayBtn = document.getElementById('closeReaderOverlayBtn');
-const readerOverlay = document.getElementById('readerOverlay');
-const readerViewport = document.getElementById('readerViewport');
-const readerModeSelect = document.getElementById('readerModeSelect');
-const readerPageNav = document.getElementById('readerPageNav');
-const prevScreenPageBtn = document.getElementById('prevScreenPageBtn');
-const nextScreenPageBtn = document.getElementById('nextScreenPageBtn');
-const readerEndActions = document.getElementById('readerEndActions');
-const endPrevChapterBtn = document.getElementById('endPrevChapterBtn');
-const endNextChapterBtn = document.getElementById('endNextChapterBtn');
-const readerCardTitle = document.getElementById('readerCardTitle');
-const readerCardText = document.getElementById('readerCardText');
-const toggleEditorModeBtn = document.getElementById('toggleEditorModeBtn');
-const readerOverlayHeader = document.querySelector('.reader-overlay__header');
-const readerToolbar = document.querySelector('#readerOverlay .reader-toolbar');
-const readerBottomNav = document.querySelector('#readerOverlay .reader-bottom-nav');
-const readerOverlayBody = document.querySelector('#readerOverlay .reader-overlay__body');
-const readerOverlayProgress = document.querySelector('#readerOverlay .reader-progress-wrap');
-const toggleReaderSettingsBtn = document.getElementById('toggleReaderSettingsBtn');
-const readerMetaVolume = document.getElementById('readerMetaVolume');
-const readerMetaChapter = document.getElementById('readerMetaChapter');
-const readerMetaCounter = document.getElementById('readerMetaCounter');
-const libraryData = {
+    const toggleMusic = document.getElementById("toggleMusic");
+    const beautyBtn = document.getElementById("beautyBtn");
+    const birthdayMusic = document.getElementById("birthdayMusic");
+    const marchMusic = document.getElementById("marchMusic");
+    const launchScreen = document.getElementById("launchScreen");
+    const moodText = document.getElementById("moodText");
+    const sparkleBtn = document.getElementById("sparkleBtn");
+    const openMiniGift = document.getElementById("openMiniGift");
+    const miniGiftBox = document.getElementById("miniGiftBox");
+    const enableMotionBtn = document.getElementById("enableMotionBtn");
+    const motionPrompt = document.getElementById("motionPrompt");
+    const closeMotionPrompt = document.getElementById("closeMotionPrompt");
+    const laterMotionBtn = document.getElementById("laterMotionBtn");
+    const openLibraryBookBtn = document.getElementById("openLibraryBookBtn");
+    const libraryImportStubBtn = document.getElementById("libraryImportStubBtn");
+    const cyclesList = document.getElementById("cyclesList");
+    const cycleInfo = document.getElementById("cycleInfo");
+    const volumesList = document.getElementById("volumesList");
+    const readerHeader = document.getElementById("readerHeader");
+    const readerContent = document.getElementById("readerContent");
+    const continueReadingBtn = document.getElementById('continueReadingBtn');
+    const readerFontSize = document.getElementById("readerFontSize");
+    const readerWidth = document.getElementById("readerWidth");
+    const readerThemeBtn = document.getElementById("readerThemeBtn");
+    const readerChapterCounter = document.getElementById('readerChapterCounter');
+    const backToVolumesBtn = document.getElementById('backToVolumesBtn');
+    const readerFontSelect = document.getElementById('readerFontSelect');
+    const readerLineHeightSelect = document.getElementById('readerLineHeightSelect');
+    const readerDensitySelect = document.getElementById('readerDensitySelect');
+    const readerOverlayProgressPercent = document.getElementById('readerOverlayProgressPercent');
+    const readerOverlayProgressFill = document.getElementById('readerOverlayProgressFill');
+    const readerProgressLabel = document.getElementById('readerProgressLabel');
+    const toggleChapterMenuBtn = document.getElementById('toggleChapterMenuBtn');
+    const readerChapterMenu = document.getElementById('readerChapterMenu');
+    const readerChapterMenuList = document.getElementById('readerChapterMenuList');
+    const openReaderOverlayBtn = document.getElementById('openReaderOverlayBtn');
+    const closeReaderOverlayBtn = document.getElementById('closeReaderOverlayBtn');
+    const readerOverlay = document.getElementById('readerOverlay');
+    const readerViewport = document.getElementById('readerViewport');
+    const readerModeSelect = document.getElementById('readerModeSelect');
+    const readerPageNav = document.getElementById('readerPageNav');
+    const prevScreenPageBtn = document.getElementById('prevScreenPageBtn');
+    const nextScreenPageBtn = document.getElementById('nextScreenPageBtn');
+    const readerEndActions = document.getElementById('readerEndActions');
+    const endPrevChapterBtn = document.getElementById('endPrevChapterBtn');
+    const endNextChapterBtn = document.getElementById('endNextChapterBtn');
+    const readerCardTitle = document.getElementById('readerCardTitle');
+    const readerCardText = document.getElementById('readerCardText');
+    const toggleEditorModeBtn = document.getElementById('toggleEditorModeBtn');
+    const readerToolbar = document.querySelector('#readerOverlay .reader-toolbar');
+    const readerOverlayBody = document.querySelector('#readerOverlay .reader-overlay__body');
+    const toggleReaderSettingsBtn = document.getElementById('toggleReaderSettingsBtn');
+    const readerMetaVolume = document.getElementById('readerMetaVolume');
+    const readerMetaChapter = document.getElementById('readerMetaChapter');
+    const readerMetaCounter = document.getElementById('readerMetaCounter');
+    const libraryData = {
   cycles: [
     {
       id: "cycle-1",
@@ -3082,14 +3073,6 @@ function renderVolumes(cycle) {
 
 function updateReaderProgressUI(percent) {
   const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
-
-  if (readerProgressPercent) {
-    readerProgressPercent.textContent = `${safePercent}%`;
-  }
-
-  if (readerProgressFill) {
-    readerProgressFill.style.width = `${safePercent}%`;
-  }
 
   if (readerOverlayProgressPercent) {
     readerOverlayProgressPercent.textContent = `${safePercent}%`;
@@ -3533,8 +3516,6 @@ function updateReaderEndActions() {
     return;
   }
 
-  updateReaderNavButtons();
-
   const contentBottom = readerContent.offsetTop + readerContent.offsetHeight;
   const viewportBottom = readerViewport.scrollTop + readerViewport.clientHeight;
 
@@ -3601,21 +3582,6 @@ function openReaderChapterMenu() {
 function closeReaderChapterMenu() {
   if (!readerChapterMenu) return;
   readerChapterMenu.hidden = true;
-}
-
-function updateReaderNavButtons() {
-  const cycle = getSelectedCycle();
-  const { prev, next } = getAdjacentReaderTargets(cycle);
-
-  if (endPrevChapterBtn) {
-    endPrevChapterBtn.hidden = !prev;
-    endPrevChapterBtn.disabled = !prev;
-  }
-
-  if (endNextChapterBtn) {
-    endNextChapterBtn.hidden = !next;
-    endNextChapterBtn.disabled = !next;
-  }
 }
 
 function getAdjacentReaderTargets(cycle) {
