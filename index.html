@@ -3132,6 +3132,8 @@ function openReaderChapter(volumeId, chapterId) {
     readerViewport.scrollTop = 0;
   }
 
+  updateReaderNavButtons();
+
   requestAnimationFrame(() => {
     updateReaderProgressUI(getReaderScrollPercent());
     saveReaderProgress();
@@ -3432,20 +3434,17 @@ function scrollReaderByViewport(direction) {
 }
 
 function updateReaderEndActions() {
-  if (!readerEndActions || !readerViewport || !selectedChapterId) {
+  if (!readerEndActions || !readerViewport || !readerContent || !selectedChapterId) {
     if (readerEndActions) readerEndActions.hidden = true;
     return;
   }
 
-  const maxScroll = readerViewport.scrollHeight - readerViewport.clientHeight;
+  updateReaderNavButtons();
 
-  if (maxScroll <= 0) {
-    readerEndActions.hidden = false;
-    return;
-  }
+  const contentBottom = readerContent.offsetTop + readerContent.offsetHeight;
+  const viewportBottom = readerViewport.scrollTop + readerViewport.clientHeight;
 
-  const reachedEnd =
-    readerViewport.scrollTop + readerViewport.clientHeight >= readerViewport.scrollHeight - 120;
+  const reachedEnd = viewportBottom >= contentBottom - 24;
 
   readerEndActions.hidden = !reachedEnd;
 }
