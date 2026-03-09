@@ -3140,6 +3140,7 @@ function syncEditorModeUI() {
   }
 
   if (readerContent) {
+    readerContent.hidden = false;
     readerContent.contentEditable = isEditor ? 'true' : 'false';
     readerContent.setAttribute('spellcheck', isEditor ? 'true' : 'false');
     readerContent.setAttribute('data-editor-mode', isEditor ? 'on' : 'off');
