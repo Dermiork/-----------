@@ -3140,41 +3140,16 @@ function openReaderChapter(volumeId, chapterId) {
 }
 
 function syncReaderEndButtons(cycle) {
-  const volume = getSelectedVolume(cycle);
-  const chapter = getSelectedChapter(volume);
-  const chapters = getAllChaptersFlat();
-
-  if (!volume || !chapter || !chapters.length) {
-    if (endPrevChapterBtn) {
-      endPrevChapterBtn.hidden = true;
-      endPrevChapterBtn.disabled = true;
-    }
-
-    if (endNextChapterBtn) {
-      endNextChapterBtn.hidden = true;
-      endNextChapterBtn.disabled = true;
-    }
-
-    return;
-  }
-
-  const currentIndex = chapters.findIndex(
-    item =>
-      item.volumeId === volume.id &&
-      item.chapterId === chapter.id
-  );
-
-  const hasPrev = currentIndex > 0;
-  const hasNext = currentIndex !== -1 && currentIndex < chapters.length - 1;
+  const { prev, next } = getAdjacentReaderTargets(cycle);
 
   if (endPrevChapterBtn) {
-    endPrevChapterBtn.hidden = !hasPrev;
-    endPrevChapterBtn.disabled = !hasPrev;
+    endPrevChapterBtn.hidden = !prev;
+    endPrevChapterBtn.disabled = !prev;
   }
 
   if (endNextChapterBtn) {
-    endNextChapterBtn.hidden = !hasNext;
-    endNextChapterBtn.disabled = !hasNext;
+    endNextChapterBtn.hidden = !next;
+    endNextChapterBtn.disabled = !next;
   }
 }
 
@@ -3329,24 +3304,11 @@ function toggleReaderChapterMenu() {
 
 function goToAdjacentChapter(direction) {
   const cycle = getSelectedCycle();
-  const volume = getSelectedVolume(cycle);
-  const chapter = getSelectedChapter(volume);
+  const { prev, next } = getAdjacentReaderTargets(cycle);
 
-  if (!cycle || !volume || !chapter) return;
+  const target = direction < 0 ? prev : next;
+  if (!target) return;
 
-  const chapters = getAllChaptersFlat();
-  const currentIndex = chapters.findIndex(
-    item =>
-      item.volumeId === volume.id &&
-      item.chapterId === chapter.id
-  );
-
-  if (currentIndex === -1) return;
-
-  const targetIndex = currentIndex + direction;
-  if (targetIndex < 0 || targetIndex >= chapters.length) return;
-
-  const target = chapters[targetIndex];
   openReaderChapter(target.volumeId, target.chapterId);
 }
 
@@ -3547,43 +3509,75 @@ function closeReaderChapterMenu() {
 
 function updateReaderNavButtons() {
   const cycle = getSelectedCycle();
-  const volume = getSelectedVolume(cycle);
-  const chapter = getSelectedChapter(volume);
-
-  const chapters = getAllChaptersFlat();
-
-  if (!cycle || !volume || !chapter || !chapters.length) {
-    if (endPrevChapterBtn) {
-      endPrevChapterBtn.hidden = true;
-      endPrevChapterBtn.disabled = true;
-    }
-
-    if (endNextChapterBtn) {
-      endNextChapterBtn.hidden = true;
-      endNextChapterBtn.disabled = true;
-    }
-
-    return;
-  }
-
-  const currentIndex = chapters.findIndex(
-    item =>
-      item.volumeId === volume.id &&
-      item.chapterId === chapter.id
-  );
-
-  const hasPrev = currentIndex > 0;
-  const hasNext = currentIndex >= 0 && currentIndex < chapters.length - 1;
+  const { prev, next } = getAdjacentReaderTargets(cycle);
 
   if (endPrevChapterBtn) {
-    endPrevChapterBtn.hidden = !hasPrev;
-    endPrevChapterBtn.disabled = !hasPrev;
+    endPrevChapterBtn.hidden = !prev;
+    endPrevChapterBtn.disabled = !prev;
   }
 
   if (endNextChapterBtn) {
-    endNextChapterBtn.hidden = !hasNext;
-    endNextChapterBtn.disabled = !hasNext;
+    endNextChapterBtn.hidden = !next;
+    endNextChapterBtn.disabled = !next;
   }
+}
+
+function getAdjacentReaderTargets(cycle) {
+  if (!cycle || !Array.isArray(cycle.volumes)) {
+    return { prev: null, next: null };
+  }
+
+  const volumeIndex = cycle.volumes.findIndex(volume => volume.id === selectedVolumeId);
+  if (volumeIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  const volume = cycle.volumes[volumeIndex];
+  const chapterIndex = (volume.chapters || []).findIndex(chapter => chapter.id === selectedChapterId);
+  if (chapterIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  let prev = null;
+  let next = null;
+
+  if (chapterIndex > 0) {
+    const prevChapter = volume.chapters[chapterIndex - 1];
+    prev = {
+      volumeId: volume.id,
+      chapterId: prevChapter.id
+    };
+  } else if (volumeIndex > 0) {
+    const prevVolume = cycle.volumes[volumeIndex - 1];
+    const prevChapter = prevVolume?.chapters?.[prevVolume.chapters.length - 1];
+
+    if (prevVolume && prevChapter) {
+      prev = {
+        volumeId: prevVolume.id,
+        chapterId: prevChapter.id
+      };
+    }
+  }
+
+  if (chapterIndex < volume.chapters.length - 1) {
+    const nextChapter = volume.chapters[chapterIndex + 1];
+    next = {
+      volumeId: volume.id,
+      chapterId: nextChapter.id
+    };
+  } else if (volumeIndex < cycle.volumes.length - 1) {
+    const nextVolume = cycle.volumes[volumeIndex + 1];
+    const nextChapter = nextVolume?.chapters?.[0];
+
+    if (nextVolume && nextChapter) {
+      next = {
+        volumeId: nextVolume.id,
+        chapterId: nextChapter.id
+      };
+    }
+  }
+
+  return { prev, next };
 }
 
 sparkleBtn?.addEventListener("click", () => {
