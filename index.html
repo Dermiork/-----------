@@ -2056,6 +2056,26 @@ body.reader-overlay-open{
   border:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(10px);
   box-shadow:0 12px 30px rgba(0,0,0,.22);
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  cursor:grab;
+}
+
+.reader-ui-toggle-fab:active{
+  cursor:grabbing;
+}
+
+.reader-ui-toggle-fab[hidden]{
+  display:none !important;
+}
+
+@media (max-width:640px){
+  .reader-ui-toggle-fab{
+    width:44px;
+    height:44px;
+    font-size:17px;
+  }
 }
 
 .reader-ui-toggle-fab:hover{
@@ -2807,6 +2827,7 @@ body.reader-overlay-open{
     const readerMetaCounter = document.getElementById('readerMetaCounter');
     const readerProgressMetaLeft = document.getElementById('readerProgressMetaLeft');
     const readerUiToggleFab = document.getElementById('readerUiToggleFab');
+    const READER_FAB_STORAGE_KEY = 'readerUiToggleFabPosition';
     const libraryData = {
   cycles: [
     {
@@ -2895,6 +2916,15 @@ let readerViewState = {
   mode: 'scroll',
   editorMode: false,
   uiVisible: false
+};
+
+let readerFabDragState = {
+  active: false,
+  moved: false,
+  startX: 0,
+  startY: 0,
+  offsetX: 0,
+  offsetY: 0
 };
 
 const chapterDrafts = {};
@@ -3226,6 +3256,12 @@ function syncEditorModeUI() {
   if (readerUiToggleFab) {
   readerUiToggleFab.hidden = !isEditor;
 }
+
+  if (isEditor) {
+    requestAnimationFrame(() => {
+      restoreReaderFabPosition();
+    });
+  }
 
   if (isEditor) {
     closeReaderChapterMenu();
@@ -4575,12 +4611,143 @@ readerContent?.addEventListener('input', () => {
   setCurrentEditorValue(readerContent.innerHTML);
 });
 
-readerUiToggleFab?.addEventListener('click', () => {
+readerUiToggleFab?.addEventListener('click', (event) => {
+  if (readerFabDragState.moved) {
+    event.preventDefault();
+    readerFabDragState.moved = false;
+    return;
+  }
+
   if (!readerOverlay) return;
 
   const hiddenNow = readerOverlay.classList.contains('ui-hidden');
   setReaderUIVisible(hiddenNow);
 });
+
+requestAnimationFrame(() => {
+  if (readerUiToggleFab && readerOverlay) {
+    restoreReaderFabPosition();
+  }
+});
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getReaderFabBounds() {
+  if (!readerOverlay || !readerUiToggleFab) return null;
+
+  const overlayRect = readerOverlay.getBoundingClientRect();
+  const fabRect = readerUiToggleFab.getBoundingClientRect();
+
+  const minLeft = 8;
+  const minTop = 8;
+  const maxLeft = Math.max(minLeft, overlayRect.width - fabRect.width - 8);
+  const maxTop = Math.max(minTop, overlayRect.height - fabRect.height - 8);
+
+  return { overlayRect, fabRect, minLeft, minTop, maxLeft, maxTop };
+}
+
+function saveReaderFabPosition(left, top) {
+  try {
+    localStorage.setItem(READER_FAB_STORAGE_KEY, JSON.stringify({ left, top }));
+  } catch (error) {}
+}
+
+function applyReaderFabPosition(left, top) {
+  if (!readerUiToggleFab) return;
+
+  readerUiToggleFab.style.left = `${left}px`;
+  readerUiToggleFab.style.top = `${top}px`;
+  readerUiToggleFab.style.right = 'auto';
+  readerUiToggleFab.style.bottom = 'auto';
+}
+
+function restoreReaderFabPosition() {
+  if (!readerUiToggleFab || !readerOverlay) return;
+
+  const bounds = getReaderFabBounds();
+  if (!bounds) return;
+
+  try {
+    const raw = localStorage.getItem(READER_FAB_STORAGE_KEY);
+    if (!raw) return;
+
+    const parsed = JSON.parse(raw);
+    if (
+      typeof parsed.left !== 'number' ||
+      typeof parsed.top !== 'number'
+    ) {
+      return;
+    }
+
+    const left = clamp(parsed.left, bounds.minLeft, bounds.maxLeft);
+    const top = clamp(parsed.top, bounds.minTop, bounds.maxTop);
+    applyReaderFabPosition(left, top);
+  } catch (error) {}
+}
+
+function resetReaderFabDefaultPosition() {
+  if (!readerUiToggleFab || !readerOverlay) return;
+
+  const overlayRect = readerOverlay.getBoundingClientRect();
+  const fabRect = readerUiToggleFab.getBoundingClientRect();
+
+  const left = overlayRect.width - fabRect.width - 14;
+  const top = overlayRect.height - fabRect.height - 82 - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)') || 0);
+
+  applyReaderFabPosition(
+    Math.max(8, left),
+    Math.max(8, top)
+  );
+}
+
+function startReaderFabDrag(clientX, clientY) {
+  if (!readerUiToggleFab) return;
+
+  const rect = readerUiToggleFab.getBoundingClientRect();
+  const overlayRect = readerOverlay?.getBoundingClientRect();
+  if (!overlayRect) return;
+
+  readerFabDragState.active = true;
+  readerFabDragState.moved = false;
+  readerFabDragState.startX = clientX;
+  readerFabDragState.startY = clientY;
+  readerFabDragState.offsetX = clientX - rect.left;
+  readerFabDragState.offsetY = clientY - rect.top;
+}
+
+function moveReaderFab(clientX, clientY) {
+  if (!readerFabDragState.active || !readerUiToggleFab || !readerOverlay) return;
+
+  const bounds = getReaderFabBounds();
+  if (!bounds) return;
+
+  const rawLeft = clientX - bounds.overlayRect.left - readerFabDragState.offsetX;
+  const rawTop = clientY - bounds.overlayRect.top - readerFabDragState.offsetY;
+
+  const left = clamp(rawLeft, bounds.minLeft, bounds.maxLeft);
+  const top = clamp(rawTop, bounds.minTop, bounds.maxTop);
+
+  if (
+    Math.abs(clientX - readerFabDragState.startX) > 4 ||
+    Math.abs(clientY - readerFabDragState.startY) > 4
+  ) {
+    readerFabDragState.moved = true;
+  }
+
+  applyReaderFabPosition(left, top);
+}
+
+function endReaderFabDrag() {
+  if (!readerFabDragState.active || !readerUiToggleFab) return;
+
+  readerFabDragState.active = false;
+
+  const left = parseFloat(readerUiToggleFab.style.left || '0');
+  const top = parseFloat(readerUiToggleFab.style.top || '0');
+  saveReaderFabPosition(left, top);
+}
 
 renderLibrary();
 
