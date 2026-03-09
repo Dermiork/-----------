@@ -2005,6 +2005,10 @@ body.reader-overlay-open{
   padding:28px 20px 120px;
 }
 
+.reader-editor[hidden]{
+  display:none !important;
+}
+
 .reader-editor__intro{
   display:flex;
   flex-direction:column;
@@ -2083,6 +2087,10 @@ body.reader-overlay-open{
     min-height:260px;
     font-size:14px;
   }
+}
+
+#readerOverlay.is-editor .reader-content{
+  display:none;
 }
 
   </style>
