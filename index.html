@@ -1942,6 +1942,23 @@ body.reader-overlay-open{
   opacity: .72;
 }
 
+#readerProgressMetaLeft{
+  cursor: pointer;
+  transition: opacity .18s ease, transform .18s ease;
+  position: relative;
+}
+
+#readerProgressMetaLeft:active{
+  opacity: .72;
+  transform: translateY(1px);
+}
+
+#readerProgressMetaLeft::after{
+  content: " · Оглавление";
+  opacity: .72;
+  font-size: .92em;
+}
+
   </style>
 </head>
 <body>
@@ -2536,7 +2553,11 @@ body.reader-overlay-open{
 
  <div class="reader-progress-wrap">
   <div class="reader-progress-meta">
-    <div id="readerProgressMetaLeft" class="reader-progress-meta-left">
+    <div id="readerProgressMetaLeft"
+     class="reader-progress-meta-left"
+     title="Открыть оглавление"
+     role="button"
+     tabindex="0">
       <span id="readerMetaVolume">Том</span>
       <span id="readerMetaChapter">Глава</span>
       <span id="readerMetaCounter">Глава 0 из 0</span>
@@ -4292,6 +4313,13 @@ toggleReaderSettingsPanelBtn?.addEventListener('click', (event) => {
 readerProgressMetaLeft?.addEventListener('click', (event) => {
   event.stopPropagation();
   toggleReaderChapterMenu();
+});
+
+readerProgressMetaLeft?.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    toggleReaderChapterMenu();
+  }
 });
 
 renderLibrary();
