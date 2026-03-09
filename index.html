@@ -1859,10 +1859,19 @@ body.reader-overlay-open{
 }
 
 .reader-end-actions__buttons{
-  display: grid;
+  display: flex;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   align-items: stretch;
+  flex-direction: column;
+}
+
+#endNextChapterBtn{
+  order: 1;
+}
+
+#endPrevChapterBtn{
+  order: 2;
 }
 
 .reader-end-actions__buttons .reader-nav-btn{
