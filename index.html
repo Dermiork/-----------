@@ -2036,6 +2036,50 @@ body.reader-overlay-open{
   display:none !important;
 }
 
+.reader-ui-toggle-fab{
+  position:absolute;
+  right:14px;
+  bottom:calc(82px + env(safe-area-inset-bottom));
+  z-index:12;
+  width:46px;
+  height:46px;
+  border:none;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  font-size:18px;
+  font-weight:700;
+  color:#fff;
+  background:rgba(12,20,40,.88);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
+}
+
+.reader-ui-toggle-fab:hover{
+  transform:translateY(-1px);
+}
+
+.reader-ui-toggle-fab[hidden]{
+  display:none !important;
+}
+
+#readerOverlay.is-editor .reader-ui-toggle-fab{
+  display:inline-flex;
+}
+
+@media (max-width:640px){
+  .reader-ui-toggle-fab{
+    right:12px;
+    bottom:calc(78px + env(safe-area-inset-bottom));
+    width:44px;
+    height:44px;
+    font-size:17px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2628,6 +2672,17 @@ body.reader-overlay-open{
       </div>
     </div>
 
+    <button
+  id="readerUiToggleFab"
+  class="reader-ui-toggle-fab"
+  type="button"
+  aria-label="Показать или скрыть интерфейс"
+  title="Показать или скрыть интерфейс"
+  hidden
+>
+  ◉
+</button>
+
  <div class="reader-progress-wrap">
   <div class="reader-progress-meta">
     <div id="readerProgressMetaLeft"
@@ -2751,7 +2806,7 @@ body.reader-overlay-open{
     const readerMetaChapter = document.getElementById('readerMetaChapter');
     const readerMetaCounter = document.getElementById('readerMetaCounter');
     const readerProgressMetaLeft = document.getElementById('readerProgressMetaLeft');
-
+    const readerUiToggleFab = document.getElementById('readerUiToggleFab');
     const libraryData = {
   cycles: [
     {
@@ -3167,6 +3222,10 @@ function syncEditorModeUI() {
     );
     toggleEditorModeBtn.title = isEditor ? 'Выйти из режима редактора' : 'Открыть режим редактора';
   }
+
+  if (readerUiToggleFab) {
+  readerUiToggleFab.hidden = !isEditor;
+}
 
   if (isEditor) {
     closeReaderChapterMenu();
@@ -4431,22 +4490,18 @@ readerViewport?.addEventListener('scroll', () => {
 
 readerViewport?.addEventListener('click', (event) => {
   const clickedControl = event.target.closest(
-  'button, select, label, input, .reader-toolbar, .reader-chapter-menu, .reader-end-actions'
-);
+    'button, select, label, input, textarea, .reader-toolbar, .reader-chapter-menu, .reader-end-actions, .reader-ui-toggle-fab'
+  );
 
   if (clickedControl) return;
   if (!readerOverlay) return;
-  if (readerViewState.editorMode) return;
+
+  if (readerViewState.editorMode) {
+    return;
+  }
 
   const hiddenNow = readerOverlay.classList.contains('ui-hidden');
-
-  if (hiddenNow) {
-    readerOverlay.classList.remove('ui-hidden');
-  } else {
-    readerOverlay.classList.add('ui-hidden');
-    if (readerToolbar) readerToolbar.hidden = true;
-    if (readerChapterMenu) readerChapterMenu.hidden = true;
-  }
+  setReaderUIVisible(hiddenNow);
 });
 
 function toggleReaderSettingsPanel() {
@@ -4518,6 +4573,13 @@ readerProgressMetaLeft?.addEventListener('keydown', (event) => {
 readerContent?.addEventListener('input', () => {
   if (!readerViewState.editorMode) return;
   setCurrentEditorValue(readerContent.innerHTML);
+});
+
+readerUiToggleFab?.addEventListener('click', () => {
+  if (!readerOverlay) return;
+
+  const hiddenNow = readerOverlay.classList.contains('ui-hidden');
+  setReaderUIVisible(hiddenNow);
 });
 
 renderLibrary();
