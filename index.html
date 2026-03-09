@@ -3264,18 +3264,13 @@ function getAllChaptersFlat() {
 
   const result = [];
 
-  cycle.volumes.forEach((volume, volumeIndex) => {
+  cycle.volumes.forEach(volume => {
     if (!Array.isArray(volume.chapters)) return;
 
-    volume.chapters.forEach((chapter, chapterIndex) => {
+    volume.chapters.forEach(chapter => {
       result.push({
-        cycleId: cycle.id,
         volumeId: volume.id,
-        volumeTitle: volume.title,
-        volumeIndex,
-        chapterId: chapter.id,
-        chapterTitle: chapter.title,
-        chapterIndex
+        chapterId: chapter.id
       });
     });
   });
