@@ -2447,7 +2447,7 @@ body.reader-overlay-open{
         <button id="toggleChapterMenuBtn" class="reader-topbar-btn btn-ghost" type="button">Оглавление</button>
         <button id="toggleEditorModeBtn" class="reader-topbar-btn btn-ghost" type="button">✎</button>
         <button id="closeReaderOverlayBtn" class="reader-topbar-btn btn-ghost" type="button">✕</button>
-        <button id="toggleReaderSettingsBtn" class="reader-topbar-btn btn-ghost" type="button">Aa</button>
+        <button id="toggleReaderSettingsPanelBtn" class="reader-topbar-btn btn-ghost" type="button">Aa</button>
       </div>
     </div>
 
@@ -2641,7 +2641,7 @@ body.reader-overlay-open{
     const toggleEditorModeBtn = document.getElementById('toggleEditorModeBtn');
     const readerToolbar = document.querySelector('#readerOverlay .reader-toolbar');
     const readerOverlayBody = document.querySelector('#readerOverlay .reader-overlay__body');
-    const toggleReaderSettingsBtn = document.getElementById('toggleReaderSettingsBtn');
+    const toggleReaderSettingsPanelBtn = document.getElementById('toggleReaderSettingsPanelBtn');
     const readerMetaVolume = document.getElementById('readerMetaVolume');
     const readerMetaChapter = document.getElementById('readerMetaChapter');
     const readerMetaCounter = document.getElementById('readerMetaCounter');
@@ -3319,7 +3319,7 @@ function renderReader(cycle) {
     <p class="reader-subtext">${volume.title} · ${chapter.title}</p>
   `;
 
-  readerContent.innerHTML = chapter.content;
+  readerContent.innerHTML = renderChapterContent(chapter.content);
 
   updateReaderChapterCounter(cycle);
   updateReaderMeta(cycle);
@@ -3337,6 +3337,10 @@ function renderReader(cycle) {
     updateContinueReadingButton();
     updateReaderEndActions();
   });
+}
+
+function renderChapterContent(content) {
+  return content || "";
 }
 
 function renderLibrary() {
@@ -4140,13 +4144,6 @@ const enabled = await enableMotionAccess();
 updateMusicButton();
 updateActiveTab("homePage");
 
-backToVolumesBtn?.addEventListener('click', () => {
-  const volumesBlock = document.querySelector('.library-volumes');
-  if (volumesBlock) {
-    volumesBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-});
-
 readerChapterMenuList?.addEventListener('click', (event) => {
   const button = event.target.closest('.reader-chapter-menu-item');
   if (!button) return;
@@ -4246,9 +4243,11 @@ function toggleReaderSettingsPanel() {
 
   if (shouldOpen) {
     readerToolbar.hidden = false;
+
     if (readerChapterMenu) {
       readerChapterMenu.hidden = true;
     }
+
     if (readerOverlay) {
       readerOverlay.classList.remove('ui-hidden');
     }
@@ -4279,6 +4278,13 @@ toggleChapterMenuBtn?.addEventListener('click', (event) => {
 backToVolumesBtn?.addEventListener('click', (event) => {
   event.stopPropagation();
   closeReaderOverlay();
+
+  requestAnimationFrame(() => {
+    const volumesBlock = document.querySelector('.library-volumes');
+    if (volumesBlock) {
+      volumesBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 });
 
 closeReaderOverlayBtn?.addEventListener('click', (event) => {
@@ -4286,24 +4292,12 @@ closeReaderOverlayBtn?.addEventListener('click', (event) => {
   closeReaderOverlay();
 });
 
-function toggleReaderSettings() {
-  if (!readerToolbar) return;
-
-  const shouldOpen = readerToolbar.hidden;
-
-  if (shouldOpen) {
-    readerToolbar.hidden = false;
-    if (readerChapterMenu) readerChapterMenu.hidden = true;
-    if (readerOverlay) readerOverlay.classList.remove('ui-hidden');
-  } else {
-    readerToolbar.hidden = true;
-  }
-}
-
-toggleReaderSettingsBtn?.addEventListener('click', (event) => {
+toggleReaderSettingsPanelBtn?.addEventListener('click', (event) => {
   event.stopPropagation();
-  toggleReaderSettings();
+  toggleReaderSettingsPanel();
 });
+
+
 
 renderLibrary();
 
