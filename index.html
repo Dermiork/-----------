@@ -1776,29 +1776,34 @@ body.reader-overlay-open{
 
 #readerOverlay .reader-overlay__header{
   top:calc(12px + env(safe-area-inset-top));
-  min-height:132px;
-  padding:18px;
+  padding:14px 16px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  gap:10px;
+}
+
+#readerOverlay .reader-overlay__header h3{
+  margin:0;
+  font-size:18px;
+  line-height:1.25;
 }
 
 #readerOverlay .reader-toolbar{
-  top:calc(156px + env(safe-area-inset-top));
+  top:var(--reader-header-bottom);
   bottom:calc(74px + env(safe-area-inset-bottom));
   overflow-y:auto;
   overflow-x:hidden;
-  padding:12px;
+  padding: 8px 12px 12px;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
 
 #readerOverlay .reader-chapter-menu{
-  top:calc(156px + env(safe-area-inset-top));
+  top: var(--reader-header-bottom);
   bottom:calc(74px + env(safe-area-inset-bottom));
   overflow-y:auto;
   overflow-x:hidden;
-  padding:10px;
+  padding: 6px 10px 10px;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
 }
@@ -1846,6 +1851,10 @@ body.reader-overlay-open{
 #readerOverlay .reader-toolbar[hidden],
 #readerOverlay .reader-chapter-menu[hidden]{
   display:none !important;
+}
+
+#readerOverlay{
+  --reader-header-bottom: calc(118px + env(safe-area-inset-top));
 }
 
 .reader-progress-meta-left{
@@ -2696,6 +2705,7 @@ body.reader-overlay-open{
     const toggleEditorModeBtn = document.getElementById('toggleEditorModeBtn');
     const readerToolbar = document.querySelector('#readerOverlay .reader-toolbar');
     const readerOverlayBody = document.querySelector('#readerOverlay .reader-overlay__body');
+    const readerOverlayHeader = document.querySelector('#readerOverlay .reader-overlay__header');
     const toggleReaderSettingsPanelBtn = document.getElementById('toggleReaderSettingsPanelBtn');
     const readerMetaVolume = document.getElementById('readerMetaVolume');
     const readerMetaChapter = document.getElementById('readerMetaChapter');
@@ -2908,6 +2918,16 @@ const pageOrder = ['homePage', 'birthdayPage', 'marchPage', 'libraryPage'];
   if (index !== -1 && buttons[index]) {
     buttons[index].classList.add('active');
   }
+}
+
+function syncReaderOverlayPanelsOffset() {
+  if (!readerOverlay || !readerOverlayHeader) return;
+
+  const headerRect = readerOverlayHeader.getBoundingClientRect();
+  const overlayRect = readerOverlay.getBoundingClientRect();
+
+  const bottomOffset = headerRect.bottom - overlayRect.top;
+  readerOverlay.style.setProperty('--reader-header-bottom', `${bottomOffset}px`);
 }
 
 function updateMusicButton() {
@@ -3431,6 +3451,9 @@ function getAllChaptersFlat() {
 }
 
 function toggleReaderChapterMenu() {
+
+  syncReaderOverlayPanelsOffset();
+
   if (!readerChapterMenu) return;
 
   const willOpen = readerChapterMenu.hidden;
@@ -4287,6 +4310,9 @@ readerViewport?.addEventListener('click', (event) => {
 });
 
 function toggleReaderSettingsPanel() {
+
+  syncReaderOverlayPanelsOffset();
+
   if (!readerToolbar) return;
 
   const shouldOpen = readerToolbar.hidden;
@@ -4356,6 +4382,9 @@ window.addEventListener("load", () => {
 });
 
 setTimeout(hideLaunchScreen, 2200);
+
+window.addEventListener('resize', syncReaderOverlayPanelsOffset);
+
   </script>
 </body>
 </html>
