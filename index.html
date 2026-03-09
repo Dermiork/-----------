@@ -3669,18 +3669,6 @@ libraryImportStubBtn?.addEventListener("click", () => {
   showToast("Импорт документа добавим следующим этапом 📚");
 });
 
-if (prevChapterBtn) {
-  prevChapterBtn.addEventListener("click", () => {
-    goToAdjacentChapter(-1);
-  });
-}
-
-if (nextChapterBtn) {
-  nextChapterBtn.addEventListener("click", () => {
-    goToAdjacentChapter(1);
-  });
-}
-
 readerFontSize?.addEventListener("change", () => {
   readerSettings.fontSize = Number(readerFontSize.value);
   applyReaderSettings();
