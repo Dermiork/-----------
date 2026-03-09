@@ -2927,6 +2927,10 @@ let readerFabDragState = {
   offsetY: 0
 };
 
+let fabDragging = false;
+let fabOffsetX = 0;
+let fabOffsetY = 0;
+
 const chapterDrafts = {};
 
 let readerSettings = {
@@ -4748,6 +4752,39 @@ function endReaderFabDrag() {
   const top = parseFloat(readerUiToggleFab.style.top || '0');
   saveReaderFabPosition(left, top);
 }
+
+readerUiToggleFab?.addEventListener('pointerdown', (e) => {
+  fabDragging = true;
+
+  const rect = readerUiToggleFab.getBoundingClientRect();
+
+  fabOffsetX = e.clientX - rect.left;
+  fabOffsetY = e.clientY - rect.top;
+
+  readerUiToggleFab.setPointerCapture(e.pointerId);
+});
+
+window.addEventListener('pointermove', (e) => {
+  if (!fabDragging) return;
+
+  const overlay = document.getElementById('readerOverlay');
+  if (!overlay) return;
+
+  const rect = overlay.getBoundingClientRect();
+
+  let left = e.clientX - rect.left - fabOffsetX;
+  let top = e.clientY - rect.top - fabOffsetY;
+
+  readerUiToggleFab.style.left = left + 'px';
+  readerUiToggleFab.style.top = top + 'px';
+
+  readerUiToggleFab.style.right = 'auto';
+  readerUiToggleFab.style.bottom = 'auto';
+});
+
+window.addEventListener('pointerup', () => {
+  fabDragging = false;
+});
 
 renderLibrary();
 
