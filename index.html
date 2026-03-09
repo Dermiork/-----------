@@ -2534,7 +2534,6 @@ const readerOverlayProgressFill = document.getElementById('readerOverlayProgress
 const readerProgressLabel = document.getElementById('readerProgressLabel');
 const toggleChapterMenuBtn = document.getElementById('toggleChapterMenuBtn');
 const readerChapterMenu = document.getElementById('readerChapterMenu');
-const readerChaptersBtn = document.getElementById('readerChaptersBtn');
 const readerChapterMenuList = document.getElementById('readerChapterMenuList');
 const openReaderOverlayBtn = document.getElementById('openReaderOverlayBtn');
 const closeReaderOverlayBtn = document.getElementById('closeReaderOverlayBtn');
@@ -4054,10 +4053,9 @@ readerChapterMenuList?.addEventListener('click', (event) => {
   const button = event.target.closest('.reader-chapter-menu-item');
   if (!button) return;
 
-  const cycle = getSelectedCycle();
-  const { volumeId, chapterId } = button.dataset;
+  const { chapterId } = button.dataset;
 
-  openChapterById(cycle, volumeId, chapterId);
+  openChapterById(chapterId);
   closeReaderChapterMenu();
 });
 
