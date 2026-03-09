@@ -1999,14 +1999,23 @@ body.reader-overlay-open{
 #readerOverlay.is-editor .reader-content{
   outline:none;
   cursor:text;
-  background:transparent;
-  box-shadow:none;
-  border-radius:0;
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+  border-radius:0 !important;
+  color:inherit !important;
+}
+
+#readerOverlay.is-editor .reader-content.is-warm{
+  background:rgba(255, 244, 226, 0.92) !important;
+  color:#2c2018 !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  border-radius:18px !important;
 }
 
 #readerOverlay.is-editor .reader-content:focus{
   outline:none;
-  box-shadow:none;
+  box-shadow:none !important;
 }
 
 #readerOverlay.is-editor .reader-content,
@@ -2016,8 +2025,11 @@ body.reader-overlay-open{
 }
 
 #readerOverlay.is-editor .reader-content[contenteditable="true"]{
-  -webkit-user-modify: read-write-plaintext-only;
   caret-color:#fff;
+}
+
+#readerOverlay.is-editor .reader-content.is-warm[contenteditable="true"]{
+  caret-color:#2c2018;
 }
 
 #readerOverlay.is-editor .reader-end-actions{
