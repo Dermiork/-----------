@@ -4205,8 +4205,11 @@ endNextChapterBtn?.addEventListener('click', () => {
 });
 
 toggleEditorModeBtn?.addEventListener('click', () => {
-  readerViewState.editorMode = !readerViewState.editorMode;
-  showToast(readerViewState.editorMode ? 'Режим редактора подготовим следующим этапом ✍️' : 'Возвращаю обычную читалку ♥');
+  console.log('editor button click');
+
+  if (typeof showToast === "function") {
+    showToast("Режим редактора скоро появится ✍️");
+  }
 });
 
 readerViewport?.addEventListener('scroll', () => {
