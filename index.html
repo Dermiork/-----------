@@ -2043,15 +2043,12 @@ body.reader-overlay-open{
   z-index:12;
   width:46px;
   height:46px;
+  padding:0;
   border:none;
   border-radius:999px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding:0;
-  font-size:18px;
-  font-weight:700;
-  color:#fff;
   background:rgba(12,20,40,.88);
   border:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(10px);
@@ -2060,26 +2057,42 @@ body.reader-overlay-open{
   user-select:none;
   -webkit-user-select:none;
   cursor:grab;
+  line-height:1;
+  transform:none !important;
+  filter:none !important;
+  transition:background .18s ease, opacity .18s ease, box-shadow .18s ease;
 }
 
-.reader-ui-toggle-fab:active{
-  cursor:grabbing;
+.reader-ui-toggle-fab::before{
+  content:"";
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.92);
+  box-sizing:border-box;
+  display:block;
 }
 
-.reader-ui-toggle-fab[hidden]{
-  display:none !important;
-}
-
-@media (max-width:640px){
-  .reader-ui-toggle-fab{
-    width:44px;
-    height:44px;
-    font-size:17px;
-  }
+.reader-ui-toggle-fab::after{
+  content:"";
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.92);
 }
 
 .reader-ui-toggle-fab:hover{
-  transform:translateY(-1px);
+  transform:none !important;
+  filter:none !important;
+  background:rgba(16,26,50,.94);
+}
+
+.reader-ui-toggle-fab:active{
+  transform:none !important;
+  filter:none !important;
+  cursor:grabbing;
+  background:rgba(18,30,58,.98);
 }
 
 .reader-ui-toggle-fab[hidden]{
@@ -2096,7 +2109,16 @@ body.reader-overlay-open{
     bottom:calc(78px + env(safe-area-inset-bottom));
     width:44px;
     height:44px;
-    font-size:17px;
+  }
+
+  .reader-ui-toggle-fab::before{
+    width:16px;
+    height:16px;
+  }
+
+  .reader-ui-toggle-fab::after{
+    width:7px;
+    height:7px;
   }
 }
 
@@ -2692,16 +2714,14 @@ body.reader-overlay-open{
       </div>
     </div>
 
-    <button
+<button
   id="readerUiToggleFab"
   class="reader-ui-toggle-fab"
   type="button"
   aria-label="Показать или скрыть интерфейс"
   title="Показать или скрыть интерфейс"
   hidden
->
-  ◉
-</button>
+></button>
 
  <div class="reader-progress-wrap">
   <div class="reader-progress-meta">
