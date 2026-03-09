@@ -1569,6 +1569,8 @@ html, body{
   border-radius:20px;
   background:rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.10);
+  position: relative;
+  z-index: 160;
 }
 
 .reader-overlay__header-main{
@@ -1753,6 +1755,7 @@ body.reader-overlay-open{
   border:1px solid rgba(255,255,255,.10);
   border-radius:18px;
   transition:opacity .22s ease, transform .22s ease;
+  box-sizing:border-box;
 }
 
 #readerOverlay .reader-overlay__header{
@@ -1764,9 +1767,13 @@ body.reader-overlay-open{
 }
 
 #readerOverlay .reader-chapter-menu{
-  top:calc(98px + env(safe-area-inset-top));
-  max-height:42svh;
-  overflow:auto;
+  top:calc(148px + env(safe-area-inset-top));
+  max-height:min(38svh, 280px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:8px;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 
 #readerOverlay .reader-progress-wrap{
@@ -1954,8 +1961,8 @@ body.reader-overlay-open{
 }
 
 #readerProgressMetaLeft::after{
-  content: " · Оглавление";
-  opacity: .72;
+  content: " ☰ Оглавление";
+  opacity: .82;
   font-size: .92em;
 }
 
@@ -3348,7 +3355,6 @@ function renderReader(cycle) {
 
   readerHeader.innerHTML = `
     <h3>${cycle.title}</h3>
-    <p class="reader-subtext">${volume.title} · ${chapter.title}</p>
   `;
 
   readerContent.innerHTML = renderChapterContent(chapter.content);
