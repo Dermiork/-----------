@@ -2199,6 +2199,25 @@ body.reader-overlay-open{
   scroll-snap-align:start;
 }
 
+#readerOverlay.is-paged #readerEndActions{
+  display:none !important;
+}
+
+.reader-paged-tail{
+  break-before:column;
+  break-inside:avoid;
+  page-break-before:always;
+  min-height:100%;
+  display:flex;
+  align-items:flex-end;
+  padding:0 0 24px;
+}
+
+.reader-end-actions--paged{
+  width:100%;
+  max-width:none;
+}
+
   </style>
 </head>
 <body>
@@ -3779,7 +3798,7 @@ function renderReader(cycle) {
     <h3>${cycle.title}</h3>
   `;
 
-  readerContent.innerHTML = renderChapterContent(getCurrentEditorValue());
+  readerContent.innerHTML = renderReaderBodyHtml(getCurrentEditorValue());
 
   updateReaderChapterCounter(cycle);
   updateReaderMeta(cycle);
@@ -3994,6 +4013,11 @@ function updateReaderEndActions() {
     readerViewState.editorMode
   ) {
     if (readerEndActions) readerEndActions.hidden = true;
+    return;
+  }
+
+  if (isPagedReaderMode()) {
+    readerEndActions.hidden = true;
     return;
   }
 
@@ -5085,6 +5109,91 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+function renderPagedTailMarkup() {
+  const cycle = getSelectedCycle();
+  const volume = getSelectedVolume(cycle);
+  const chapter = getSelectedChapter(volume);
+
+  if (!cycle || !volume || !chapter) return '';
+
+  const chapters = Array.isArray(volume.chapters) ? volume.chapters : [];
+  const currentIndex = chapters.findIndex(item => item.id === chapter.id);
+
+  const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
+  const nextChapter = currentIndex >= 0 && currentIndex < chapters.length - 1
+    ? chapters[currentIndex + 1]
+    : null;
+
+  return `
+    <div class="reader-paged-tail">
+      <div class="reader-end-actions reader-end-actions--paged">
+        <div class="reader-end-actions__title">Глава закончилась ♥</div>
+        <div class="reader-end-actions__buttons">
+          ${
+            nextChapter
+              ? `<button type="button" class="reader-nav-btn" data-paged-next-chapter="${nextChapter.id}">
+                  Следующая глава →
+                </button>`
+              : ''
+          }
+          ${
+            prevChapter
+              ? `<button type="button" class="reader-nav-btn btn-ghost" data-paged-prev-chapter="${prevChapter.id}">
+                  ← Предыдущая глава
+                </button>`
+              : ''
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderReaderBodyHtml(rawHtml) {
+  const chapterHtml = renderChapterContent(rawHtml || '');
+
+  if (isPagedReaderMode()) {
+    return chapterHtml + renderPagedTailMarkup();
+  }
+
+  return chapterHtml;
+}
+
+readerContent?.addEventListener('click', (event) => {
+  const nextBtn = event.target.closest('[data-paged-next-chapter]');
+  if (nextBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const nextChapterId = nextBtn.getAttribute('data-paged-next-chapter');
+    if (nextChapterId) {
+      selectedChapterId = nextChapterId;
+      resetPagedReaderState();
+      renderLibrary();
+      requestAnimationFrame(() => {
+        updatePagedReaderLayout();
+      });
+    }
+    return;
+  }
+
+  const prevBtn = event.target.closest('[data-paged-prev-chapter]');
+  if (prevBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const prevChapterId = prevBtn.getAttribute('data-paged-prev-chapter');
+    if (prevChapterId) {
+      selectedChapterId = prevChapterId;
+      resetPagedReaderState();
+      renderLibrary();
+      requestAnimationFrame(() => {
+        updatePagedReaderLayout();
+      });
+    }
+  }
+});
 
 renderLibrary();
 
