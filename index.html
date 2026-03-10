@@ -2183,7 +2183,10 @@ body.reader-overlay-open{
 #readerOverlay.is-paged #readerViewport{
   overflow-x:auto;
   overflow-y:hidden;
+  overflow-wrap:normal;
   scroll-behavior:smooth;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
 }
 
 #readerOverlay.is-paged #readerViewport::-webkit-scrollbar{
@@ -2193,6 +2196,7 @@ body.reader-overlay-open{
 #readerOverlay.is-paged .reader-content{
   transform:none !important;
   will-change:auto !important;
+  scroll-snap-align:start;
 }
 
 #readerOverlay.is-paged .reader-end-actions{
@@ -5004,7 +5008,7 @@ function updatePagedReaderLayout() {
     readerViewport.scrollLeft = 0;
     readerViewState.currentPage = 0;
     readerViewState.totalPages = 1;
-    updateReaderProgressUI();
+    updateReaderProgressUI(getReaderScrollPercent());
     return;
   }
 
