@@ -2181,17 +2181,18 @@ body.reader-overlay-open{
 }
 
 #readerOverlay.is-paged #readerViewport{
-  overflow:hidden;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+}
+
+#readerOverlay.is-paged #readerViewport::-webkit-scrollbar{
+  display:none;
 }
 
 #readerOverlay.is-paged .reader-content{
-  height:100%;
-  overflow:hidden;
-  column-gap:0;
-  column-fill:auto;
-  margin:0;
-  max-width:none;
-  width:100%;
+  transform:none !important;
+  will-change:auto !important;
 }
 
 #readerOverlay.is-paged .reader-end-actions{
@@ -5000,6 +5001,7 @@ function updatePagedReaderLayout() {
     readerContent.style.transform = '';
     readerContent.style.transition = '';
     readerContent.style.willChange = '';
+    readerViewport.scrollLeft = 0;
     readerViewState.currentPage = 0;
     readerViewState.totalPages = 1;
     updateReaderProgressUI();
@@ -5015,15 +5017,17 @@ function updatePagedReaderLayout() {
   readerContent.style.columnWidth = `${viewportWidth}px`;
   readerContent.style.columnGap = '0px';
   readerContent.style.columnFill = 'auto';
-  readerContent.style.transition = 'transform .22s ease';
-  readerContent.style.willChange = 'transform';
+
+  readerContent.style.transform = '';
+  readerContent.style.transition = '';
+  readerContent.style.willChange = '';
 
   const totalPages = Math.max(1, Math.ceil(readerContent.scrollWidth / viewportWidth));
   readerViewState.totalPages = totalPages;
   readerViewState.currentPage = Math.min(readerViewState.currentPage, totalPages - 1);
 
   const offset = readerViewState.currentPage * viewportWidth;
-  readerContent.style.transform = `translateX(-${offset}px)`;
+  readerViewport.scrollLeft = offset;
 
   updateReaderProgressUI();
 }
@@ -5038,7 +5042,11 @@ function goToReaderPage(pageIndex) {
 
   const viewportWidth = readerViewport.clientWidth || 0;
   const offset = nextPage * viewportWidth;
-  readerContent.style.transform = `translateX(-${offset}px)`;
+
+  readerViewport.scrollTo({
+    left: offset,
+    behavior: 'smooth'
+  });
 
   updateReaderProgressUI();
 }
@@ -5061,17 +5069,6 @@ readerPageTapNext?.addEventListener('click', (event) => {
 
   if (!isPagedReaderMode()) return;
   goToAdjacentReaderPage(1);
-});
-
-readerReadModeSelect?.addEventListener('change', () => {
-  readerSettings.readMode = readerReadModeSelect.value;
-  saveReaderSettings();
-  resetPagedReaderState();
-  applyReaderSettings();
-
-  requestAnimationFrame(() => {
-    updatePagedReaderLayout();
-  });
 });
 
 window.addEventListener('resize', () => {
