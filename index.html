@@ -3122,6 +3122,9 @@ function syncReaderModeUI() {
   }
 
   updateReaderEndActions();
+  requestAnimationFrame(() => {
+  updatePagedReaderLayout();
+});
 }
 
 function setReaderUIVisible(visible) {
@@ -4641,7 +4644,17 @@ readerModeSelect?.addEventListener('change', () => {
   readerViewState.mode = readerModeSelect.value === 'paged' ? 'paged' : 'scroll';
   saveReaderViewState();
   syncReaderModeUI();
-  showToast(readerViewState.mode === 'paged' ? 'Включён режим страниц ♥' : 'Включён режим скролла ♥');
+  resetPagedReaderState();
+
+  requestAnimationFrame(() => {
+    updatePagedReaderLayout();
+  });
+
+  showToast(
+    readerViewState.mode === 'paged'
+      ? 'Включён режим страниц ♥'
+      : 'Включён режим скролла ♥'
+  );
 });
 
 prevScreenPageBtn?.addEventListener('click', () => {
@@ -4952,7 +4965,7 @@ window.addEventListener('pointerup', () => {
 });
 
 function isPagedReaderMode() {
-  return readerSettings.readMode === 'paged' && !readerViewState.editorMode;
+  return readerViewState.mode === 'paged' && !readerViewState.editorMode;
 }
 
 function resetPagedReaderState() {
