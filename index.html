@@ -2133,6 +2133,71 @@ body.reader-overlay-open{
   }
 }
 
+.reader-page-tap-zones{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+.reader-page-tap-zone{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:18%;
+  min-width:54px;
+  max-width:96px;
+  border:none;
+  padding:0;
+  margin:0;
+  background:transparent;
+  box-shadow:none;
+  border-radius:0;
+  pointer-events:auto;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.reader-page-tap-zone:hover,
+.reader-page-tap-zone:active,
+.reader-page-tap-zone:focus,
+.reader-page-tap-zone:focus-visible{
+  transform:none !important;
+  filter:none !important;
+  outline:none;
+  background:transparent;
+}
+
+.reader-page-tap-zone--left{
+  left:0;
+}
+
+.reader-page-tap-zone--right{
+  right:0;
+}
+
+#readerOverlay.is-paged .reader-page-tap-zones:not([hidden]){
+  display:block;
+}
+
+#readerOverlay.is-paged #readerViewport{
+  overflow:hidden;
+}
+
+#readerOverlay.is-paged .reader-content{
+  height:100%;
+  overflow:hidden;
+  column-gap:0;
+  column-fill:auto;
+  margin:0;
+  max-width:none;
+  width:100%;
+}
+
+#readerOverlay.is-paged .reader-end-actions{
+  display:none !important;
+}
+
   </style>
 </head>
 <body>
@@ -2715,6 +2780,23 @@ body.reader-overlay-open{
 <div id="readerContent" class="reader-content">
   <p>Здесь будет открываться текст выбранной главы.</p>
 </div>
+<div id="readerPageTapZones" class="reader-page-tap-zones" hidden>
+  <button
+    id="readerPageTapPrev"
+    class="reader-page-tap-zone reader-page-tap-zone--left"
+    type="button"
+    aria-label="Предыдущая страница"
+    title="Предыдущая страница"
+  ></button>
+
+  <button
+    id="readerPageTapNext"
+    class="reader-page-tap-zone reader-page-tap-zone--right"
+    type="button"
+    aria-label="Следующая страница"
+    title="Следующая страница"
+  ></button>
+</div>
 <div id="readerEndActions" class="reader-end-actions" hidden>
   <div class="reader-end-actions__title">Глава закончилась ♥</div>
   <div class="reader-end-actions__buttons">
@@ -2859,6 +2941,9 @@ body.reader-overlay-open{
     const readerProgressMetaLeft = document.getElementById('readerProgressMetaLeft');
     const readerUiToggleFab = document.getElementById('readerUiToggleFab');
     const READER_FAB_STORAGE_KEY = 'readerUiToggleFabPosition';
+    const readerPageTapZones = document.getElementById('readerPageTapZones');
+    const readerPageTapPrev = document.getElementById('readerPageTapPrev');
+    const readerPageTapNext = document.getElementById('readerPageTapNext');
     const libraryData = {
   cycles: [
     {
@@ -2947,6 +3032,8 @@ let readerViewState = {
   mode: 'scroll',
   editorMode: false,
   uiVisible: false
+  currentPage: 0,
+  totalPages: 1,
 };
 
 let readerFabDragState = {
@@ -3401,6 +3488,40 @@ function renderVolumes(cycle) {
 }
 
 function updateReaderProgressUI(percent) {
+  if (isPagedReaderMode()) {
+    const total = Math.max(1, readerViewState.totalPages || 1);
+    const current = Math.min(total, (readerViewState.currentPage || 0) + 1);
+    const safePercent =
+      total <= 1
+        ? 100
+        : Math.max(0, Math.min(100, Math.round(((current - 1) / (total - 1)) * 100)));
+
+    if (readerOverlayProgressPercent) {
+      readerOverlayProgressPercent.textContent = `${safePercent}%`;
+    }
+
+    if (readerOverlayProgressFill) {
+      readerOverlayProgressFill.style.width = `${safePercent}%`;
+    }
+
+    if (readerProgressMetaLeft) {
+      const cycle = getSelectedCycle();
+      const volume = getSelectedVolume(cycle);
+      const chapter = getSelectedChapter(volume);
+
+      const volumeTitle = volume?.title || 'Том';
+      const chapterTitle = chapter?.title || 'Глава';
+
+      readerProgressMetaLeft.innerHTML = `
+        <span>${escapeHtml(volumeTitle)}</span>
+        <span>${escapeHtml(chapterTitle)}</span>
+        <span>Страница ${current} из ${total}</span>
+      `;
+    }
+
+    return;
+  }
+
   const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
 
   if (readerOverlayProgressPercent) {
@@ -3665,6 +3786,9 @@ function renderReader(cycle) {
     updateContinueReadingButton();
     updateReaderEndActions();
     syncEditorModeUI();
+    requestAnimationFrame(() => {
+    updatePagedReaderLayout();
+});
   });
 }
 
@@ -4521,10 +4645,20 @@ readerModeSelect?.addEventListener('change', () => {
 });
 
 prevScreenPageBtn?.addEventListener('click', () => {
+  if (isPagedReaderMode()) {
+    goToAdjacentReaderPage(-1);
+    return;
+  }
+
   scrollReaderByViewport(-1);
 });
 
 nextScreenPageBtn?.addEventListener('click', () => {
+  if (isPagedReaderMode()) {
+    goToAdjacentReaderPage(1);
+    return;
+  }
+
   scrollReaderByViewport(1);
 });
 
@@ -4561,7 +4695,7 @@ readerViewport?.addEventListener('scroll', () => {
 
 readerViewport?.addEventListener('click', (event) => {
   const clickedControl = event.target.closest(
-    'button, select, label, input, textarea, .reader-toolbar, .reader-chapter-menu, .reader-end-actions, .reader-ui-toggle-fab'
+    'button, select, label, input, textarea, .reader-toolbar, .reader-chapter-menu, .reader-end-actions, .reader-ui-toggle-fab, .reader-page-tap-zone'
   );
 
   if (clickedControl) return;
@@ -4815,6 +4949,115 @@ window.addEventListener('pointermove', (e) => {
 
 window.addEventListener('pointerup', () => {
   fabDragging = false;
+});
+
+function isPagedReaderMode() {
+  return readerSettings.readMode === 'paged' && !readerViewState.editorMode;
+}
+
+function resetPagedReaderState() {
+  readerViewState.currentPage = 0;
+  readerViewState.totalPages = 1;
+}
+
+function updatePagedReaderLayout() {
+  if (!readerOverlay || !readerViewport || !readerContent) return;
+
+  const isPaged = isPagedReaderMode();
+
+  readerOverlay.classList.toggle('is-paged', isPaged);
+
+  if (readerPageTapZones) {
+    readerPageTapZones.hidden = !isPaged;
+  }
+
+  if (!isPaged) {
+    readerContent.style.columnWidth = '';
+    readerContent.style.columnCount = '';
+    readerContent.style.height = '';
+    readerContent.style.transform = '';
+    readerContent.style.transition = '';
+    readerContent.style.willChange = '';
+    readerViewState.currentPage = 0;
+    readerViewState.totalPages = 1;
+    updateReaderProgressUI();
+    return;
+  }
+
+  const viewportWidth = readerViewport.clientWidth;
+  const viewportHeight = readerViewport.clientHeight;
+
+  if (!viewportWidth || !viewportHeight) return;
+
+  readerContent.style.height = `${viewportHeight}px`;
+  readerContent.style.columnWidth = `${viewportWidth}px`;
+  readerContent.style.columnGap = '0px';
+  readerContent.style.columnFill = 'auto';
+  readerContent.style.transition = 'transform .22s ease';
+  readerContent.style.willChange = 'transform';
+
+  const totalPages = Math.max(1, Math.ceil(readerContent.scrollWidth / viewportWidth));
+  readerViewState.totalPages = totalPages;
+  readerViewState.currentPage = Math.min(readerViewState.currentPage, totalPages - 1);
+
+  const offset = readerViewState.currentPage * viewportWidth;
+  readerContent.style.transform = `translateX(-${offset}px)`;
+
+  updateReaderProgressUI();
+}
+
+function goToReaderPage(pageIndex) {
+  if (!isPagedReaderMode() || !readerViewport || !readerContent) return;
+
+  const maxPage = Math.max(0, readerViewState.totalPages - 1);
+  const nextPage = Math.max(0, Math.min(pageIndex, maxPage));
+
+  readerViewState.currentPage = nextPage;
+
+  const viewportWidth = readerViewport.clientWidth || 0;
+  const offset = nextPage * viewportWidth;
+  readerContent.style.transform = `translateX(-${offset}px)`;
+
+  updateReaderProgressUI();
+}
+
+function goToAdjacentReaderPage(direction) {
+  goToReaderPage(readerViewState.currentPage + direction);
+}
+
+readerPageTapPrev?.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!isPagedReaderMode()) return;
+  goToAdjacentReaderPage(-1);
+});
+
+readerPageTapNext?.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!isPagedReaderMode()) return;
+  goToAdjacentReaderPage(1);
+});
+
+readerReadModeSelect?.addEventListener('change', () => {
+  readerSettings.readMode = readerReadModeSelect.value;
+  saveReaderSettings();
+  resetPagedReaderState();
+  applyReaderSettings();
+
+  requestAnimationFrame(() => {
+    updatePagedReaderLayout();
+  });
+});
+
+window.addEventListener('resize', () => {
+  if (!readerOverlay || readerOverlay.hidden) return;
+
+  requestAnimationFrame(() => {
+    updatePagedReaderLayout();
+  });
 });
 
 renderLibrary();
