@@ -3114,22 +3114,25 @@ function closeReaderOverlay() {
 }
 
 function syncReaderModeUI() {
+  const pagedActive = isPagedReaderMode();
+
   if (readerModeSelect) {
     readerModeSelect.value = readerViewState.mode;
   }
 
   if (readerOverlay) {
-    readerOverlay.classList.toggle('is-paged', readerViewState.mode === 'paged');
+    readerOverlay.classList.toggle('is-paged', pagedActive);
   }
 
   if (readerContent) {
-    readerContent.classList.toggle('is-paged', readerViewState.mode === 'paged');
+    readerContent.classList.toggle('is-paged', pagedActive);
   }
 
   updateReaderEndActions();
+
   requestAnimationFrame(() => {
-  updatePagedReaderLayout();
-});
+    updatePagedReaderLayout();
+  });
 }
 
 function setReaderUIVisible(visible) {
@@ -3407,6 +3410,10 @@ function syncEditorModeUI() {
   }
 
   updateReaderEndActions();
+
+  requestAnimationFrame(() => {
+    updatePagedReaderLayout();
+  });
 }
 
 function renderCycles() {
